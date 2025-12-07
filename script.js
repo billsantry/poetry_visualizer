@@ -162,23 +162,23 @@ async function generateImageForLine(line, prevLine, composition) {
     // Context-Aware Prompt Engineering
     const contextSection = prevLine ? `Story Context (Previous Line): "${prevLine}".` : "Story Context: Opening scene.";
 
-    // Consistent Organic Style Definition
-    const organicStyle = "Shot on 35mm film, Kodak Portra 400. Soft natural lighting, film grain, organic textures, slightly imperfect, dreamlike quality. No shiny CGI, no hyper-realism, no plastic look.";
+    // Style: Motion Blur & Kinetic Flow
+    const organicStyle = "Long exposure photography, strong motion blur, sweeping light trails, kinetic energy. Ethereal, dreamlike, flowing atmosphere. Abstract but cinematic.";
 
     const prompt = `
-    A purely visual, wordless, atmospheric photography piece.
+    A simple, low-complexity visual interpretation.
     Subject: A visually abstract interpretation of: "${line}".
     ${contextSection}
     Visual Style: ${organicStyle}
     Composition: ${composition}.
-    IMPORTANT: The image must be completely free of text, letters, words, titles, and typography. The scene is a real-world capture, not a poster or illustration containing text.
+    IMPORTANT: The image must be completely free of text, letters, words, titles, and typography. The scene is a visual mood piece.
     `.trim();
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // Increased to 30s to allow for retries/queues
 
-    // Quality Mode: DALL-E 3, 1024x1024
-    const model = "dall-e-3";
+    // Speed Mode: DALL-E 2, 512x512 (via config)
+    const model = config.dalleModel || "dall-e-2";
     const size = config.dalleSize || "1024x1024";
 
     console.log(`Generating with ${model} at ${size}`);
