@@ -211,7 +211,7 @@ async function generateImageForLine(line, prevLine, composition) {
     const organicStyle = "Long exposure photography, strong motion blur, sweeping light trails, kinetic energy. Ethereal, dreamlike, flowing atmosphere. Abstract but cinematic.";
 
     const prompt = `
-    A simple, low-complexity visual interpretation.
+    A cinematic, highly detailed visual interpretation.
     Subject: A visually abstract interpretation of: "${line}".
     ${contextSection}
     Visual Style: ${organicStyle}
@@ -222,8 +222,8 @@ async function generateImageForLine(line, prevLine, composition) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // Increased to 30s to allow for retries/queues
 
-    // Speed Mode: DALL-E 2, 512x512 (via config)
-    const model = config.dalleModel || "dall-e-2";
+    // Quality Mode: Default to DALL-E 3 for best results matching local config
+    const model = config.dalleModel || "dall-e-3";
     const size = config.dalleSize || "1024x1024";
 
     console.log(`Generating with ${model} at ${size}`);
