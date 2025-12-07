@@ -208,12 +208,12 @@ async function generateImageForLine(line, prevLine, composition) {
     const contextSection = prevLine ? `Story Context (Previous Line): "${prevLine}".` : "Story Context: Opening scene.";
 
     // Style: Motion Blur & Kinetic Flow
-    // Style: Authentic Magic Realism (User Request)
-    const organicStyle = "Authentic photography, shot on 35mm film, photorealistic, raw and candid textures. Natural lighting. Magic realism style: realistic objects in surreal combinations. No digital art or CGI look.";
+    // Style: Naturalistic Documentary (User Request)
+    const organicStyle = "Straight photography, documentary style. Natural light, unposed, authentic. High resolution, tangible textures. Grounded and realistic.";
 
     const prompt = `
-    A photorealistic, authentic visual interpretation.
-    Subject: A magic realism interpretation of: "${line}".
+    A literal, grounded visual interpretation.
+    Subject: A naturalistic photograph of: "${line}".
     ${contextSection}
     Visual Style: ${organicStyle}
     Composition: ${composition}.
