@@ -256,15 +256,46 @@ body::before {
     font-size: 2.5rem;
     font-weight: 300;
     color: #fff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.9);
     max-width: 900px;
     margin: 0 auto;
-    line-height: 1.4;
-    transition: opacity 1s, transform 1s;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(2px);
+    line-height: 0.9;
+    /* Tight leading for Herb Lubalin style */
+    background: transparent;
+    /* Removed box for cleaner look */
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3rem;
+    /* Tight word spacing */
+    min-height: 200px;
+    /* Prevent layout shift */
+}
+
+/* Kinetic Word Animation */
+.kinetic-word {
+    opacity: 0;
+    transform: translateY(15px);
+    display: inline-block;
+    animation: fadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    /* Herb Lubalin Style Defaults */
+    font-family: 'Inter', sans-serif;
+    /* Clean geometric */
+    letter-spacing: -0.04em;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ==========================================

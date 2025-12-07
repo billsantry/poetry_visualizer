@@ -74,7 +74,7 @@ async function startVisualization() {
         // Prepare UI
         document.getElementById('inputPanel').classList.add('hidden');
         document.getElementById('loadingIndicator').classList.remove('hidden');
-        document.getElementById('loadingText').textContent = "Analyzing poem and dreaming up visuals...";
+        document.getElementById('loadingText').textContent = "Analyzing poem and storyboarding scenes...";
 
         // Parse Poem
         state.poemLines = poemInput.split('\n').filter(line => line.trim().length > 0);
@@ -115,59 +115,85 @@ async function generateStream() {
     const total = state.poemLines.length;
     const btnText = document.getElementById('btnText');
 
-    console.log("Starting generation stream...");
+    console.log("Starting parallel generation stream...");
 
-    for (let i = 0; i < total; i++) {
-        const line = state.poemLines[i];
-        const prevLine = i > 0 ? state.poemLines[i - 1] : "";
+    // Concurrency Limit (Batch Size)
+    // 3 is a safe number to avoid rate limits while significantly speeding up
+    const BATCH_SIZE = 3;
 
-        // Cycle through composition rules
-        const rule = cinematicRules[i % cinematicRules.length];
+    for (let i = 0; i < total; i += BATCH_SIZE) {
 
-        if (state.images.length === 0) {
-            loadingText.textContent = `Directing scene ${i + 1} of ${total}...\n"${line.substring(0, 30)}..."\n[${rule.composition}]`;
+        // Prepare batch
+        const batchPromises = [];
+        const batchIndices = [];
+
+        for (let j = 0; j < BATCH_SIZE; j++) {
+            const index = i + j;
+            if (index >= total) break;
+
+            const line = state.poemLines[index];
+            const prevLine = index > 0 ? state.poemLines[index - 1] : "";
+            const rule = cinematicRules[index % cinematicRules.length];
+
+            batchIndices.push(index);
+
+            // Log status
+            if (i === 0 && j === 0) {
+                loadingText.textContent = `Storyboarding initial scenes (${j + 1}-${Math.min(j + BATCH_SIZE, total)} of ${total})...`;
+            }
+
+            // Fire off request
+            console.log(`Queueing frame ${index + 1}: ${line.substring(0, 20)}...`);
+            batchPromises.push(
+                generateImageForLine(line, prevLine, rule.composition)
+                    .then(url => ({
+                        url,
+                        text: line,
+                        motion: rule.motion,
+                        index: index
+                    }))
+                    .catch(e => {
+                        console.error(`Frame ${index} failed:`, e);
+                        // Return fallback
+                        return {
+                            url: 'https://images.unsplash.com/photo-1518066000714-58c45f1a2c0a?q=80&w=2070&auto=format&fit=crop',
+                            text: line,
+                            motion: "kb-zoom-in",
+                            index: index
+                        };
+                    })
+            );
         }
 
-        try {
-            const imageUrl = await generateImageForLine(line, prevLine, rule.composition);
-            state.images.push({
-                url: imageUrl,
-                text: line,
-                motion: rule.motion
-            });
+        // Wait for ENTIRE batch to finish
+        const results = await Promise.all(batchPromises);
 
-            // Update Progress Bar
-            if (progressBar) {
-                const percent = ((i + 1) / total) * 100;
-                progressBar.style.width = `${percent}%`;
-            }
+        // Add to state in correct order
+        results.forEach(res => {
+            state.images[res.index] = res; // Ensure index alignment
+        });
 
-            // Start slideshow IMMEDIATELY after first frame is ready
-            if (i === 0) {
-                console.log("First frame ready. Starting action.");
-                document.getElementById('loadingIndicator').classList.add('hidden');
-                document.getElementById('visualControls').classList.remove('hidden');
-                document.getElementById('textOverlay').classList.remove('hidden');
-                btnText.textContent = "Visualize Poem";
-                startSlideshow();
-            }
+        // Update Progress
+        if (progressBar) {
+            const percent = (Math.min(i + BATCH_SIZE, total) / total) * 100;
+            progressBar.style.width = `${percent}%`;
+        }
 
-        } catch (e) {
-            console.error(`Failed to generate image for line "${line}":`, e);
-            if (i === 0) {
-                showError(e.message);
-                stopVisualization();
-                return; // Stop stream if first fails
-            }
+        // Start Slideshow Check:
+        // Start ONLY if we have finished the first batch (images 0, 1, 2 ready)
+        if (i === 0) {
+            console.log("First storyboard batch ready. Action!");
+            loadingText.textContent = "Starting show...";
+            await new Promise(r => setTimeout(r, 500)); // Brief pause for UX
 
-            // Fallback for others
-            state.images.push({
-                url: 'https://images.unsplash.com/photo-1518066000714-58c45f1a2c0a?q=80&w=2070&auto=format&fit=crop',
-                text: line,
-                motion: "kb-zoom-in"
-            });
+            document.getElementById('loadingIndicator').classList.add('hidden');
+            document.getElementById('visualControls').classList.remove('hidden');
+            document.getElementById('textOverlay').classList.remove('hidden');
+            btnText.textContent = "Visualize Poem";
+            startSlideshow();
         }
     }
+
     // Complete progress
     if (progressBar) progressBar.style.width = '100%';
 }
@@ -187,7 +213,7 @@ async function generateImageForLine(line, prevLine, composition) {
     ${contextSection}
     Visual Style: ${organicStyle}
     Composition: ${composition}.
-    IMPORTANT: The image must be completely free of text, letters, words, titles, and typography. The scene is a visual mood piece.
+    IMPORTANT: The image must be completely free of text, letters, words, titles, and typography. The scene is a visual mood piece. No text, no lettering, no words, no symbols, no typographic elements.
     `.trim();
 
     const controller = new AbortController();
@@ -316,15 +342,16 @@ function playNextSlide() {
     // Activate transition
     slide.classList.add('active');
 
-    // Update Text
-    textElement.textContent = currentData.text;
-    textElement.style.opacity = 0;
-    setTimeout(() => textElement.style.opacity = 1, 1000);
+    // Clear previous text IMMEDIATELY
+    textElement.textContent = '';
+    textElement.style.opacity = 1; // Keep container visible, words will animate in
 
-    // Fade out text before next slide
-    setTimeout(() => {
-        textElement.style.opacity = 0;
-    }, 9000);
+    // Retrieve Line
+    const line = currentData.text;
+
+    // Render Kinetic Typography (Herb Lubalin Style)
+    renderKineticText(line, textElement);
+
 
     // Clean up old slides
     const slides = document.querySelectorAll('.slide');
@@ -333,11 +360,11 @@ function playNextSlide() {
     }
 
     // Schedule next slide
-    // Duration 10s
+    // Duration 4s
     setTimeout(() => {
         state.currentSlideIndex++;
         playNextSlide();
-    }, 3000);
+    }, 4000);
 }
 
 function stopVisualization() {
@@ -355,6 +382,53 @@ function stopVisualization() {
 // ==========================================
 // Event Listeners
 // ==========================================
+// ==========================================
+// Kinetic Typography Engine
+// ==========================================
+function renderKineticText(text, container) {
+    const words = text.split(' ');
+
+    // Total duration available (approx 3.5s before fade out, leaving margin)
+    // We want all words to appear within ~2-2.5 seconds max
+    const delayPerWord = Math.min(300, 2000 / words.length);
+
+    words.forEach((word, index) => {
+        const span = document.createElement('span');
+        span.textContent = word + '\u00A0'; // Add non-breaking space
+        span.className = 'kinetic-word';
+
+        // Herb Lubalin Style Refined: Balancing Weights
+        // Focusing on Book (400), Medium (500), and occasional Bold (700)
+        // Moving away from too many thin/ultra-black extremes
+        const weights = [300, 400, 400, 500, 500, 600, 700];
+        const sizes = ['1em', '1.1em', '1.3em', '1.6em', '1.8em'];
+
+        // Deterministic pseudo-random based on word content (so it looks same if replayed)
+        const seed = word.length + index;
+        const weight = weights[seed % weights.length];
+        const size = sizes[seed % sizes.length];
+
+        span.style.fontWeight = weight;
+        span.style.fontSize = size;
+
+        // Timing Strategy:
+        // We have 4000ms per slide.
+        // We want the text to finish building around the 3000ms mark (right before fade out).
+        // So we distribute the start times across 0 to 2500ms.
+        const maxDuration = 2500;
+        const staggeredDelay = Math.min(400, maxDuration / words.length);
+        span.style.animationDelay = `${index * staggeredDelay}ms`;
+
+        // Occasional "tight fit" logic (negative margin)
+        if (seed % 3 === 0) {
+            span.style.letterSpacing = '-0.08em';
+        }
+
+        container.appendChild(span);
+    });
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     try {
         // Safe check for config
