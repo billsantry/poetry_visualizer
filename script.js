@@ -455,12 +455,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Hide the input box
                     if (inputGroup) {
                         inputGroup.classList.add('hidden');
-
-                        // Add a visual indicator
-                        const badge = document.createElement('div');
-                        badge.innerHTML = '<span>🔒 Secure Cloud Key Active</span>';
-                        badge.style.cssText = 'color: #818cf8; font-size: 0.9rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; background: rgba(99, 102, 241, 0.1); padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);';
-                        inputGroup.parentNode.insertBefore(badge, inputGroup);
                     }
 
                     // Store it globally for startVisualization
