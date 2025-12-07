@@ -1,6 +1,11 @@
 {
+    "name": "celestial-nadir-api",
+    "version": "1.0.0",
+    "description": "API for Celestial Nadir",
+    "scripts": {
+        "start": "func start"
+    },
     "engines": {
         "node": "18.x"
-    },
-    "dependencies": {}
+    }
 }
