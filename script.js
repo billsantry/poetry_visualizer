@@ -9,6 +9,9 @@ const state = {
     currentSlideIndex: 0,
 };
 
+// Cloud Safety: Ensure config object exists even if config.js is missing
+window.config = window.config || {};
+
 // ==========================================
 // Main Workflow
 // ==========================================
