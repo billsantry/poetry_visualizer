@@ -208,7 +208,8 @@ async function generateImageForLine(line, prevLine, composition) {
     const contextSection = prevLine ? `Story Context (Previous Line): "${prevLine}".` : "Story Context: Opening scene.";
 
     // Style: Motion Blur & Kinetic Flow
-    const organicStyle = "Long exposure photography, strong motion blur, sweeping light trails, kinetic energy. Ethereal, dreamlike, flowing atmosphere. Abstract but cinematic.";
+    // Style: Sharp & Detailed (Removed Motion Blur 'Whoosh' effect)
+    const organicStyle = "Cinematic digital art, 8k resolution, highly detailed, sharp focus. Atmospheric, ethereal, and dreamlike. Abstract but distinct.";
 
     const prompt = `
     A cinematic, highly detailed visual interpretation.
@@ -400,11 +401,9 @@ function renderKineticText(text, container) {
         span.textContent = word + '\u00A0'; // Add non-breaking space
         span.className = 'kinetic-word';
 
-        // Herb Lubalin Style Refined: Balancing Weights
-        // Focusing on Book (400), Medium (500), and occasional Bold (700)
-        // Moving away from too many thin/ultra-black extremes
-        const weights = [300, 400, 400, 500, 500, 600, 700];
-        const sizes = ['1em', '1.1em', '1.3em', '1.6em', '1.8em'];
+        // Consistent Bold Type (User Request)
+        const weights = [700, 800];
+        const sizes = ['1.2em', '1.4em', '1.6em'];
 
         // Deterministic pseudo-random based on word content (so it looks same if replayed)
         const seed = word.length + index;
