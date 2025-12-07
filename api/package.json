@@ -1,6 +1,7 @@
 {
     "name": "celestial-nadir-api",
     "version": "1.0.0",
+    "main": "src/functions/get-config.js",
     "description": "API for Celestial Nadir",
     "scripts": {
         "start": "func start"
