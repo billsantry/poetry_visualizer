@@ -31,13 +31,29 @@ async function startVisualization() {
         const poemInput = document.getElementById('poemInput').value.trim();
 
         // Check config for key if not in input
-        if (!apiKeyInput && config.openaiApiKey) {
+        if (!apiKeyInput && typeof config !== 'undefined' && config.openaiApiKey) {
             apiKeyInput = config.openaiApiKey;
             console.log("Using API Key from config.js");
         }
 
+        // If still no key, try fetching from Azure Backend (Portal Settings)
         if (!apiKeyInput) {
-            showError('Please enter your OpenAI API Key (or safe it in config.js).');
+            try {
+                const res = await fetch('/api/get-config');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.openaiApiKey) {
+                        apiKeyInput = data.openaiApiKey;
+                        console.log("Using API Key from Azure Portal (Backend)");
+                    }
+                }
+            } catch (err) {
+                console.log("No backend config available, skipping.");
+            }
+        }
+
+        if (!apiKeyInput) {
+            showError('Please enter your OpenAI API Key (or set it in Azure Portal Configuration).');
             return;
         }
         config.openaiApiKey = apiKeyInput;
