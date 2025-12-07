@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Integrity Check</title>
+</head>
+
+<body>
+    <h1>System Status</h1>
+    <div id="status">Checking...</div>
+
+    <script src="config.js"></script>
+    <script src="imageService.js"></script>
+    <script src="videoService.js"></script>
+    <script src="audioService.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        let html = "<ul>";
+
+        try {
+            html += `<li style="color:green">config: ${typeof config !== 'undefined' ? 'OK' : 'MISSING'}</li>`;
+        } catch (e) { html += `<li style="color:red">config Error: ${e.message}</li>`; }
+
+        try {
+            html += `<li style="color:green">imageService: ${typeof imageService !== 'undefined' ? 'OK' : 'MISSING'}</li>`;
+        } catch (e) { html += `<li style="color:red">imageService Error: ${e.message}</li>`; }
+
+        try {
+            html += `<li style="color: ${typeof videoService !== 'undefined' ? 'green' : 'red'}">videoService: ${typeof videoService !== 'undefined' ? 'OK' : 'MISSING/ERROR'}</li>`;
+        } catch (e) { html += `<li style="color:red">videoService Error: ${e.message}</li>`; }
+
+        // Check if script.js loaded (it creates 'state' global)
+        try {
+            html += `<li style="color: ${typeof state !== 'undefined' ? 'green' : 'red'}">script.js (State): ${typeof state !== 'undefined' ? 'OK' : 'MISSING/ERROR'}</li>`;
+        } catch (e) { html += `<li style="color:red">script.js Error: ${e.message}</li>`; }
+
+        html += "</ul>";
+        statusDiv.innerHTML = html;
+    </script>
+</body>
+
+</html>

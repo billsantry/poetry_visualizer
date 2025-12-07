@@ -1,0 +1,10 @@
+const config = {
+    // Paste your OpenAI API Key here to avoid entering it every time.
+    // KEEP THIS FILE PRIVATE. DO NOT COMMIT IF YOU ADD A REAL KEY.
+    openaiApiKey: '', 
+    
+    // DALL-E Settings
+    dalleModel: 'dall-e-3',
+    dalleQuality: 'standard', // or 'hd'
+    dalleSize: '1024x1024'
+};

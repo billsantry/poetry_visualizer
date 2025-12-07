@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poetry Visualizer - Animated Sentiment & Phonetics</title>
+    <meta name="description"
+        content="An animated poetry visualizer that creates dynamic backgrounds based on sentiment analysis and phonetic properties">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Full Screen Loading Overlay -->
+    <div id="loadingIndicator" class="hidden">
+        <div class="spinner"></div>
+        <div id="loadingText">Analyzing poem...</div>
+        <div id="progressBarContainer">
+            <div id="progressBarFill"></div>
+        </div>
+    </div>
+    <!-- Background Slideshow System -->
+    <div id="slideshow-container">
+        <!-- Slides will be injected here dynamically -->
+    </div>
+
+    <!-- Text Overlay -->
+    <div id="textOverlay" class="hidden">
+        <div id="poemText"></div>
+    </div>
+
+    <!-- Input Panel -->
+    <div id="inputPanel" class="panel">
+        <div class="panel-content">
+            <h1>Poetry Visualizer</h1>
+            <p class="subtitle">See your words come to life with AI imagery</p>
+
+            <div class="input-group">
+                <label for="apiKey">OpenAI API Key:</label>
+                <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+                <p class="note">Your key is stored locally in your browser only.</p>
+            </div>
+
+
+
+            <div class="input-group">
+                <label for="poemInput">Enter your poem:</label>
+                <textarea id="poemInput" placeholder="Type or paste your poem here...
+                    
+Example:
+The woods are lovely, dark and deep,
+But I have promises to keep,
+And miles to go before I sleep,
+And miles to go before I sleep." rows="8"></textarea>
+            </div>
+
+            <div class="controls">
+                <button id="visualizeBtn" class="btn-primary">
+                    <span class="btn-icon">✨</span>
+                    <span id="btnText">Visualize Poem</span>
+                </button>
+            </div>
+
+            <div id="errorMessage" class="error-message hidden"></div>
+
+
+        </div>
+    </div>
+
+    <!-- Controls during visualization -->
+    <div id="visualControls" class="hidden">
+        <button id="stopBtn" class="control-btn" title="Stop & Edit">
+            <span>⏹</span>
+        </button>
+    </div>
+
+    <script src="config.js"></script>
+    <footer class="footer text-center mt-5 text-muted small">
+        <p>Created by <a href="#" class="text-decoration-none" style="color: var(--color-accent);">billsantry</a> &copy;
+            2025</p>
+    </footer>
+
+    <script type="module" src="script.js?v=2"></script>
+</body>
+
+</html>
