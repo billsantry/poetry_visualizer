@@ -33,33 +33,29 @@ async function startVisualization() {
         let apiKeyInput = document.getElementById('apiKey').value.trim();
         const poemInput = document.getElementById('poemInput').value.trim();
 
-        // Check config for key if not in input
-        if (!apiKeyInput && typeof config !== 'undefined' && config.openaiApiKey) {
-            apiKeyInput = config.openaiApiKey;
-            console.log("Using API Key from config.js");
-        }
+        const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'openai';
 
-        // If still no key, try fetching from Azure Backend (Portal Settings)
-        if (!apiKeyInput) {
-            try {
-                const res = await fetch('/api/get-config');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.openaiApiKey) {
-                        apiKeyInput = data.openaiApiKey;
-                        console.log("Using API Key from Azure Portal (Backend)");
-                    }
-                }
-            } catch (err) {
-                console.log("No backend config available, skipping.");
+        let validCredentials = false;
+
+        if (provider === 'openai') {
+            // Check config for key if not in input
+            if (!apiKeyInput && typeof config !== 'undefined' && config.openaiApiKey) {
+                apiKeyInput = config.openaiApiKey;
+                console.log("Using API Key from config.js");
             }
-        }
+            // If still no key, try fetching from Azure Backend...
 
-        if (!apiKeyInput) {
-            showError('Please enter your OpenAI API Key (or set it in Azure Portal Configuration).');
-            return;
+            if (apiKeyInput) {
+                config.openaiApiKey = apiKeyInput;
+                validCredentials = true;
+            } else {
+                showError('Please enter your OpenAI API Key.');
+                return;
+            }
+        } else if (provider === 'google') {
+            // GOOGLE: Secrets are managed by the backend
+            validCredentials = true;
         }
-        config.openaiApiKey = apiKeyInput;
 
         if (!poemInput) {
             showError('Please enter a poem first!');
@@ -112,93 +108,106 @@ const cinematicRules = [
     { composition: "Depth of field focus, immersive perspective", motion: "kb-zoom-in" }
 ];
 
+// ==========================================
+// Generation Logic (Streaming)
+// ==========================================
+
 async function generateStream() {
     const loadingText = document.getElementById('loadingText');
     const progressBar = document.getElementById('progressBarFill');
-    const total = state.poemLines.length;
     const btnText = document.getElementById('btnText');
+    const total = state.poemLines.length;
 
-    console.log("Starting parallel generation stream...");
+    console.log("Starting streaming generation...");
 
-    // Concurrency Limit (Batch Size)
-    // 3 is a safe number to avoid rate limits while significantly speeding up
-    const BATCH_SIZE = 3;
+    const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'openai';
 
-    for (let i = 0; i < total; i += BATCH_SIZE) {
+    // Concurrency Controller
+    // Limit to 1 for Google/Vertex to respect strict QPS quotas on some keys
+    const CONCURRENCY_LIMIT = provider === 'google' ? 1 : 3;
 
-        // Prepare batch
-        const batchPromises = [];
-        const batchIndices = [];
+    let nextLineIndex = 0;
+    let activeRequests = 0;
 
-        for (let j = 0; j < BATCH_SIZE; j++) {
-            const index = i + j;
-            if (index >= total) break;
+    // Helper to process the next available line
+    const processNext = async () => {
+        if (nextLineIndex >= total) return;
 
-            const line = state.poemLines[index];
-            const prevLine = index > 0 ? state.poemLines[index - 1] : "";
-            const rule = cinematicRules[index % cinematicRules.length];
+        const index = nextLineIndex++;
+        activeRequests++;
 
-            batchIndices.push(index);
+        const line = state.poemLines[index];
+        const prevLine = index > 0 ? state.poemLines[index - 1] : "";
+        const rule = cinematicRules[index % cinematicRules.length];
 
-            // Log status
-            if (i === 0 && j === 0) {
-                loadingText.textContent = `Storyboarding initial scenes (${j + 1}-${Math.min(j + BATCH_SIZE, total)} of ${total})...`;
+        const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'openai';
+
+        // UI Feedback for initial load
+        if (index < 3) {
+            loadingText.textContent = `Storyboarding scene ${index + 1} (${provider === 'google' ? 'Vertex' : 'DALL-E'})...`;
+        }
+
+        console.log(`[Manager] Queueing frame ${index + 1}: ${line.substring(0, 20)}...`);
+
+        try {
+            let url;
+            if (provider === 'google') {
+                url = await generateImageVertex(line, prevLine, rule.composition);
+            } else {
+                url = await generateImageForLine(line, prevLine, rule.composition);
             }
 
-            // Fire off request
-            console.log(`Queueing frame ${index + 1}: ${line.substring(0, 20)}...`);
-            batchPromises.push(
-                generateImageForLine(line, prevLine, rule.composition)
-                    .then(url => ({
-                        url,
-                        text: line,
-                        motion: rule.motion,
-                        index: index
-                    }))
-                    .catch(e => {
-                        console.error(`Frame ${index} failed:`, e);
-                        // Return fallback
-                        return {
-                            url: 'https://images.unsplash.com/photo-1518066000714-58c45f1a2c0a?q=80&w=2070&auto=format&fit=crop',
-                            text: line,
-                            motion: "kb-zoom-in",
-                            index: index
-                        };
-                    })
-            );
+            // Store result
+            state.images[index] = {
+                url,
+                text: line,
+                motion: rule.motion,
+                index: index
+            };
+
+            // PROGRESS UPDATE
+            if (progressBar) {
+                // Count how many we have
+                const completedCount = state.images.filter(x => x).length;
+                const percent = (completedCount / total) * 100;
+                progressBar.style.width = `${percent}%`;
+            }
+
+            // CRITICAL: Start slideshow ASAP (after first image)
+            if (index === 0 && !state.isPlaying) {
+                console.log("First frame ready. Action!");
+                loadingText.textContent = "Starting show...";
+
+                // Brief pause to ensure image is cached/ready
+                await new Promise(r => setTimeout(r, 200));
+
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('visualControls').classList.remove('hidden');
+                document.getElementById('textOverlay').classList.remove('hidden');
+                btnText.textContent = "Visualize Poem";
+                startSlideshow();
+            }
+
+        } catch (e) {
+            console.error(`Frame ${index} failed:`, e);
+            // Fallback so the show can go on
+            state.images[index] = {
+                url: 'https://images.unsplash.com/photo-1518066000714-58c45f1a2c0a?q=80&w=2070&auto=format&fit=crop',
+                text: line,
+                motion: "kb-zoom-in",
+                index: index
+            };
+        } finally {
+            activeRequests--;
+            // Recursively pick up the next task
+            processNext();
         }
+    };
 
-        // Wait for ENTIRE batch to finish
-        const results = await Promise.all(batchPromises);
-
-        // Add to state in correct order
-        results.forEach(res => {
-            state.images[res.index] = res; // Ensure index alignment
-        });
-
-        // Update Progress
-        if (progressBar) {
-            const percent = (Math.min(i + BATCH_SIZE, total) / total) * 100;
-            progressBar.style.width = `${percent}%`;
-        }
-
-        // Start Slideshow Check:
-        // Start ONLY if we have finished the first batch (images 0, 1, 2 ready)
-        if (i === 0) {
-            console.log("First storyboard batch ready. Action!");
-            loadingText.textContent = "Starting show...";
-            await new Promise(r => setTimeout(r, 500)); // Brief pause for UX
-
-            document.getElementById('loadingIndicator').classList.add('hidden');
-            document.getElementById('visualControls').classList.remove('hidden');
-            document.getElementById('textOverlay').classList.remove('hidden');
-            btnText.textContent = "Visualize Poem";
-            startSlideshow();
-        }
+    // Ignite the workers
+    for (let i = 0; i < CONCURRENCY_LIMIT; i++) {
+        processNext();
     }
-
-    // Complete progress
-    if (progressBar) progressBar.style.width = '100%';
 }
 
 async function generateImageForLine(line, prevLine, composition) {
@@ -311,22 +320,43 @@ function startSlideshow() {
 function playNextSlide() {
     if (!state.isPlaying) return;
 
-    // Check if we are at the end of the KNOWN images
-    if (state.currentSlideIndex >= state.images.length) {
+    // Check if the current slide is ready
+    const slideData = state.images[state.currentSlideIndex];
 
-        // Buffering Check: Do we expect more images?
-        if (state.images.length < state.poemLines.length) {
-            console.log("Buffering... Waiting for DALL-E...");
-            // Show buffering UI? (Optional, staying on current image is usually fine/cinematic)
-            setTimeout(() => playNextSlide(), 1000); // Check again in 1s
+    if (!slideData) {
+        // We lack data for this slide. Are we waiting for it, or are we done?
+        if (state.currentSlideIndex < state.poemLines.length) {
+            console.log(`Buffering frame ${state.currentSlideIndex}... Waiting for DALL-E...`);
+            // Show buffering UI
+            const loadingInd = document.getElementById('loadingIndicator');
+            if (loadingInd) {
+                loadingInd.classList.remove('hidden');
+                document.getElementById('loadingText').textContent = "Buffering next scene...";
+            }
+
+            // Check again in 1s
+            setTimeout(() => playNextSlide(), 1000);
             return;
         } else {
-            // Truly done. Loop or stop.
-            state.currentSlideIndex = 0; // Loop
+            // Truly done. Loop.
+            console.log("End of poem. Looping.");
+            state.currentSlideIndex = 0;
+            // Fall through to play 0
         }
+    } else {
+        // We have data, ensure buffering UI is hidden
+        document.getElementById('loadingIndicator').classList.add('hidden');
     }
 
+    // Double check we have data now (if we looped)
     const currentData = state.images[state.currentSlideIndex];
+    if (!currentData) {
+        // Safety for loop edge case if 0 is missing (?)
+        setTimeout(() => playNextSlide(), 500);
+        return;
+    }
+
+    console.log(`Playing slide ${state.currentSlideIndex}:`, currentData);
     console.log(`Playing slide ${state.currentSlideIndex}:`, currentData);
 
     const container = document.getElementById('slideshow-container');
@@ -473,10 +503,85 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const vizBtn = document.getElementById('visualizeBtn');
     const stopBtn = document.getElementById('stopBtn');
+    const providerSelect = document.getElementById('aiProvider');
+
+    if (providerSelect) {
+        providerSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'google') {
+                document.getElementById('openai-config').classList.add('hidden');
+                document.getElementById('google-config').classList.remove('hidden');
+            } else {
+                document.getElementById('openai-config').classList.remove('hidden');
+                document.getElementById('google-config').classList.add('hidden');
+            }
+        });
+    }
 
     if (vizBtn) vizBtn.addEventListener('click', startVisualization);
     if (stopBtn) stopBtn.addEventListener('click', stopVisualization);
 });
+
+// ==========================================
+// Google Vertex AI Logic (Nano Banana)
+// ==========================================
+// ==========================================
+// Google Vertex AI Logic (Nano Banana)
+// ==========================================
+// ==========================================
+// Google Vertex AI Logic (Server-Side Proxy)
+// ==========================================
+async function generateImageVertex(line, prevLine, composition) {
+    // We strictly use the backend proxy now to protect secrets.
+    // The backend reads env vars: GOOGLE_API_KEY, GOOGLE_PROJECT_ID, etc.
+
+    const url = '/api/generate-image';
+
+    const payload = {
+        prompt: line,
+        prevLine: prevLine,
+        composition: composition
+    };
+
+    // Retry Logic for 429s (handled by backend status codes)
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    while (attempts < maxAttempts) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.status === 429) {
+                console.warn(`[Backend] Quota exceeded. Retrying... (${attempts + 1}/${maxAttempts})`);
+                attempts++;
+                // Exponential backoff
+                await new Promise(r => setTimeout(r, 2000 * Math.pow(2, attempts)));
+                continue;
+            }
+
+            if (!response.ok) {
+                const errText = await response.text();
+                console.error("Backend Error:", errText);
+                throw new Error(`Server Error ${response.status}: ${errText}`);
+            }
+
+            const data = await response.json();
+            if (data.url) {
+                return data.url;
+            }
+            throw new Error("No URL in server response");
+
+        } catch (error) {
+            console.error(error);
+            if (attempts === maxAttempts - 1) throw error;
+            attempts++;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+    }
+}
 
 // Global Error Handler
 window.onerror = function (msg, url, line, col, error) {
