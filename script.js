@@ -29,13 +29,16 @@ async function startVisualization() {
     errorBox.textContent = '';
     errorBox.classList.add('hidden');
 
+    // V12 Debug
+    console.log("SCRIPT V12 LOADED");
+
     try {
         const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'google';
-        const rawPoem = document.getElementById('poemInput').value.trim();
+        const thePoemString = document.getElementById('poemInput').value.trim();
 
         // No client-side validation needed for keys anymore
 
-        if (!rawPoem) {
+        if (!thePoemString) {
             showError('Please enter a poem first!');
             return;
         }
@@ -46,7 +49,7 @@ async function startVisualization() {
         if (vizBtn) vizBtn.disabled = true;
 
         // Initialize State
-        state.poemLines = rawPoem.split('\n').filter(line => line.trim() !== "");
+        state.poemLines = thePoemString.split('\n').filter(line => line.trim() !== "");
         state.images = new Array(state.poemLines.length).fill(null);
         state.currentSlideIndex = 0;
         state.isPlaying = false;
