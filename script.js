@@ -62,11 +62,6 @@ async function startVisualization() {
         document.getElementById('loadingIndicator').classList.remove('hidden');
         document.getElementById('loadingText').textContent = "Analyzing poem and storyboarding scenes...";
 
-        // Parse Poem
-        state.poemLines = poemInput.split('\n').filter(line => line.trim().length > 0);
-        state.images = [];
-        state.currentSlideIndex = 0;
-
         // Generate Images Stream (Don't await, let it run in background)
         generateStream();
 
