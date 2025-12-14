@@ -21,8 +21,12 @@ app.http('generate-image', {
             // Construct Vertex Payload
             // Logic mirrored from frontend
             const contextSection = prevLine ? `Story Context (Previous Line): "${prevLine}".` : "Story Context: Opening scene.";
-            const organicStyle = "Straight photography, documentary style. Natural light, unposed, authentic. High resolution, tangible textures. Grounded and realistic.";
-            const fullPrompt = `A naturalistic photograph of: "${prompt}". ${contextSection} Visual Style: ${organicStyle} Composition: ${composition}. IMPORTANT: completely text-free.`;
+
+            // Refined style to discourage text
+            const organicStyle = "Straight photography, documentary style. Natural light, unposed, authentic. High resolution, tangible textures. Grounded and realistic. ZERO text, NO words, NO typography overlay.";
+
+            // Hard constraint in the prompt
+            const fullPrompt = `A naturalistic photograph of: "${prompt}". ${contextSection} Visual Style: ${organicStyle} Composition: ${composition}. IMPORTANT: The image must be completely free of text, letters, or signboards. Unsplash photography style.`;
 
             const apiUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:predict?key=${apiKey}`;
 
