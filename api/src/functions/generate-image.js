@@ -34,8 +34,7 @@ app.http('generate-image', {
                 instances: [{ prompt: fullPrompt }],
                 parameters: {
                     sampleCount: 1,
-                    aspectRatio: "1:1",
-                    negativePrompt: "text, words, letters, typography, watermark, signature, writing, caption, label, logo, branding, poster, advertisement, sign, subtitles"
+                    aspectRatio: "1:1"
                 }
             };
 
