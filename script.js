@@ -31,15 +31,11 @@ async function startVisualization() {
 
     try {
         const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'google';
+        const rawPoem = document.getElementById('poemInput').value.trim();
 
         // No client-side validation needed for keys anymore
 
-        if (!poemInput) {
-            showError('Please enter a poem first!');
-            return;
-        }
-
-        if (!poemInput) {
+        if (!rawPoem) {
             showError('Please enter a poem first!');
             return;
         }
@@ -48,6 +44,12 @@ async function startVisualization() {
         btnText.textContent = "Starting...";
         const vizBtn = document.getElementById('visualizeBtn');
         if (vizBtn) vizBtn.disabled = true;
+
+        // Initialize State
+        state.poemLines = rawPoem.split('\n').filter(line => line.trim() !== "");
+        state.images = new Array(state.poemLines.length).fill(null);
+        state.currentSlideIndex = 0;
+        state.isPlaying = false;
 
         // Small delay so user sees "Starting..." acknowledgement
         await new Promise(r => setTimeout(r, 1000));
