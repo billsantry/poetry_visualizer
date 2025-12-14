@@ -28,13 +28,16 @@ app.http('generate-image', {
             // Hard constraint at the very start
             const fullPrompt = `ABSOLUTELY NO TEXT. NO WORDS. NO TYPOGRAPHY. A naturalistic photograph of: "${prompt}". ${contextSection} Visual Style: ${organicStyle} Composition: ${composition}. Unsplash photography style.`;
 
-            const apiUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:predict?key=${apiKey}`;
+            // v1beta1 API for better parameter support (like negative prompting)
+            const apiUrl = `https://${location}-aiplatform.googleapis.com/v1beta1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:predict?key=${apiKey}`;
 
             const payload = {
                 instances: [{ prompt: fullPrompt }],
                 parameters: {
                     sampleCount: 1,
-                    aspectRatio: "1:1"
+                    aspectRatio: "1:1",
+                    // Supported in v1beta1 for Imagen 2/3
+                    negativePrompt: "text, words, letters, typography, watermark, signature, logo, subtitles"
                 }
             };
 
