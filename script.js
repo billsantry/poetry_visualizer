@@ -30,31 +30,13 @@ async function startVisualization() {
     errorBox.classList.add('hidden');
 
     try {
-        let apiKeyInput = document.getElementById('apiKey').value.trim();
-        const poemInput = document.getElementById('poemInput').value.trim();
+        const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'google';
 
-        const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'openai';
+        // No client-side validation needed for keys anymore
 
-        let validCredentials = false;
-
-        if (provider === 'openai') {
-            // Check config for key if not in input
-            if (!apiKeyInput && typeof config !== 'undefined' && config.openaiApiKey) {
-                apiKeyInput = config.openaiApiKey;
-                console.log("Using API Key from config.js");
-            }
-            // If still no key, try fetching from Azure Backend...
-
-            if (apiKeyInput) {
-                config.openaiApiKey = apiKeyInput;
-                validCredentials = true;
-            } else {
-                showError('Please enter your OpenAI API Key.');
-                return;
-            }
-        } else if (provider === 'google') {
-            // GOOGLE: Secrets are managed by the backend
-            validCredentials = true;
+        if (!poemInput) {
+            showError('Please enter a poem first!');
+            return;
         }
 
         if (!poemInput) {

@@ -39,36 +39,8 @@
             <h1>Poetry Visualizer</h1>
             <p class="subtitle">See your words come to life with AI imagery</p>
 
-            <div class="input-group">
-                <label for="aiProvider">AI Provider:</label>
-                <select id="aiProvider"
-                    style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff;">
-                    <option value="openai">OpenAI DALL-E 3</option>
-                    <option value="google">Google Vertex AI (Nano Banana)</option>
-                </select>
-            </div>
-
-            <div id="openai-config" class="provider-config">
-                <div class="input-group">
-                    <label for="apiKey">OpenAI API Key:</label>
-                    <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
-                    <p class="note">Key used directly from browser to OpenAI.</p>
-                </div>
-            </div>
-
-            <div id="google-config" class="provider-config hidden">
-                <div class="alert-info"
-                    style="background: #222; padding: 1rem; border-radius: 4px; border: 1px solid #444;">
-                    <p style="margin: 0; padding-bottom: 0.5rem; font-weight: bold;">✅ Managed Backend</p>
-                    <p style="margin: 0; font-size: 0.9em; opacity: 0.8;">
-                        Google Vertex AI credentials are securely stored on the server environment.
-                    </p>
-                </div>
-                <p class="note" style="margin-top: 1rem;">Ensure GOOGLE_API_KEY and GOOGLE_PROJECT_ID are set in your
-                    Azure Environment Variables.</p>
-            </div>
-
-
+            <!-- Provider hidden, defaults to Backend/Vertex -->
+            <input type="hidden" id="aiProvider" value="google">
 
             <div class="input-group">
                 <label for="poemInput">Enter your poem:</label>
