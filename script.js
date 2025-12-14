@@ -105,8 +105,8 @@ async function generateStream() {
     const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'openai';
 
     // Concurrency Controller
-    // Limit to 1 for Google/Vertex to respect strict QPS quotas on some keys
-    const CONCURRENCY_LIMIT = provider === 'google' ? 1 : 3;
+    // Quota now approved for 25 QPM on Google! Unleash the speed.
+    const CONCURRENCY_LIMIT = 3;
 
     let nextLineIndex = 0;
     let activeRequests = 0;
