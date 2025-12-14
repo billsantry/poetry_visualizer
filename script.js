@@ -50,6 +50,17 @@ async function startVisualization() {
 
         // Initialize State
         state.poemLines = thePoemString.split('\n').filter(line => line.trim() !== "");
+
+        // Safety Limit
+        const MAX_LINES = 8;
+        if (state.poemLines.length > MAX_LINES) {
+            showError(`That's a bit too epic! Please limit your poem to ${MAX_LINES} lines to save API credits.`);
+            const vizBtn = document.getElementById('visualizeBtn');
+            if (vizBtn) vizBtn.disabled = false;
+            btnText.textContent = "Visualize Poem";
+            return;
+        }
+
         state.images = new Array(state.poemLines.length).fill(null);
         state.currentSlideIndex = 0;
         state.isPlaying = false;
