@@ -19,14 +19,19 @@ app.http('generate-image', {
             }
 
             // Construct Vertex Payload
-            // Logic mirrored from frontend
+            // Detect spiritual mode via query param
+            const url = new URL(request.headers['x-forwarded-host'] ? `https://${request.headers['x-forwarded-host']}${request.originalUrl}` : `http://localhost${request.originalUrl}`);
+            const isSpiritual = url.searchParams.get('spiritual') === 'true';
             const contextSection = prevLine ? `Story Context (Previous Line): "${prevLine}".` : "Story Context: Opening scene.";
 
             // Refined style to discourage text
             const organicStyle = "Straight photography, documentary style. Natural light, unposed, authentic. High resolution, tangible textures. Grounded and realistic.";
 
+            // Add mystical adjectives when spiritual mode is on
+            const spiritualStyle = isSpiritual ? " ethereal, luminous, misty, celestial, soft glowing light, subtle aurora, transcendental, dream‑like, spiritual aura, delicate veil of light, other‑worldly atmosphere" : "";
+
             // Hard constraint at the very start
-            const fullPrompt = `ABSOLUTELY NO TEXT. NO WORDS. NO TYPOGRAPHY. A naturalistic photograph of: "${prompt}". ${contextSection} Visual Style: ${organicStyle} Composition: ${composition}. Unsplash photography style.`;
+            const fullPrompt = `ABSOLUTELY NO TEXT. NO WORDS. NO TYPOGRAPHY. A naturalistic photograph of: "${prompt}". ${contextSection} Visual Style: ${organicStyle}${spiritualStyle} Composition: ${composition}. Unsplash photography style.`;
 
             // v1beta1 API for better parameter support (like negative prompting)
             const apiUrl = `https://${location}-aiplatform.googleapis.com/v1beta1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:predict?key=${apiKey}`;
