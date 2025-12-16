@@ -30,7 +30,7 @@ async function startVisualization() {
     errorBox.classList.add('hidden');
 
     // V12 Debug
-    console.log("SCRIPT V12 LOADED");
+    console.log("SCRIPT V13 LOADED");
 
     try {
         const provider = document.getElementById('aiProvider') ? document.getElementById('aiProvider').value : 'google';
@@ -89,6 +89,33 @@ function showError(msg) {
     el.textContent = "Error: " + msg;
     el.classList.remove('hidden');
 }
+
+// ----------------------------------------------------------
+// Spiritual-Realm Toggle Logic
+// ----------------------------------------------------------
+
+// Initialise state from localStorage (default off)
+let spiritualMode = localStorage.getItem('spiritualMode') === 'true';
+
+const spiritualBtn = document.getElementById('spiritualToggle');
+if (spiritualBtn) {
+    if (spiritualMode) spiritualBtn.classList.add('active');
+    spiritualBtn.addEventListener('click', () => {
+        spiritualMode = !spiritualMode;
+        localStorage.setItem('spiritualMode', spiritualMode);
+        spiritualBtn.classList.toggle('active', spiritualMode);
+        console.log(`Spiritual Mode ${spiritualMode ? 'ON' : 'OFF'}`);
+    });
+}
+// Debug log to confirm toggle is set up
+console.log('Spiritual toggle ready, mode:', spiritualMode);
+
+// Helper to build backend URL with spiritual flag (used by generateImageVertex)
+function buildBackendUrl(line, prevLine, composition) {
+    const base = `/api/generate-image?line=${encodeURIComponent(line)}&prev=${encodeURIComponent(prevLine)}&comp=${encodeURIComponent(composition)}`;
+    return spiritualMode ? `${base}&spiritual=true` : base;
+}
+
 
 // Cinematic Composition Rules
 const cinematicRules = [
@@ -527,7 +554,7 @@ async function generateImageVertex(line, prevLine, composition) {
     // We strictly use the backend proxy now to protect secrets.
     // The backend reads env vars: GOOGLE_API_KEY, GOOGLE_PROJECT_ID, etc.
 
-    const url = '/api/generate-image';
+    const url = buildBackendUrl(line, prevLine, composition);
 
     const payload = {
         prompt: line,
