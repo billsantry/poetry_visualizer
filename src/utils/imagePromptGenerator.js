@@ -46,7 +46,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
     }
 
     if (isSpiritual) {
-        consistentStyle = `ethereal spiritual style, ${consistentStyle}, cosmic energy, floating sacred geometry, celestial glow, divine atmosphere, transcendental light`;
+        consistentStyle = `Thomas Kinkade style, painter of light, radiant ethereal glow, hyper-saturated luminous colors, cozy cottage aesthetic, lush detailed nature, divine atmosphere`;
     }
 
     // Generate prompts for each segment with CONSISTENT style
