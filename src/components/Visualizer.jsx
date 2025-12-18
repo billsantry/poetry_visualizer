@@ -75,22 +75,24 @@ const Visualizer = ({ poem, onBack, isSpiritual }) => {
             {/* Slideshow */}
             {!loading && !error && images.length > 0 && (
                 <>
-                    {/* 3D Background Layer */}
+                    {/* 3D Visual Layer (Over Imagery) */}
                     {isSpiritual ? (
-                        <div className="absolute inset-0 z-0 opacity-60">
+                        <div className="absolute inset-0 z-20 opacity-60 pointer-events-none">
                             <Scene analysis={analysis} rnd={rnd} />
                         </div>
                     ) : (
-                        <div className="absolute inset-0 z-0 opacity-20">
+                        <div className="absolute inset-0 z-20 opacity-20 pointer-events-none">
                             <WorldBuilder analysis={analysis} rnd={rnd} />
                         </div>
                     )}
 
-                    <ImageSlideshow
-                        images={images}
-                        currentIndex={currentIndex}
-                        onIndexChange={setCurrentIndex}
-                    />
+                    <div className="absolute inset-0 z-10">
+                        <ImageSlideshow
+                            images={images}
+                            currentIndex={currentIndex}
+                            onIndexChange={setCurrentIndex}
+                        />
+                    </div>
 
                     <div className="absolute top-4 left-4 z-50">
                         <button
