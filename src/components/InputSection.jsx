@@ -43,8 +43,8 @@ const InputSection = ({ onVisualize, isSpiritual, setIsSpiritual }) => {
                                 <Moon className="w-5 h-5" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-sm">Spiritual Realm</h3>
-                                <p className="text-xs text-white/40 text-pretty">Enable ethereal visuals and cosmic atmosphere</p>
+                                <h3 className="font-bold text-sm">Thomas Kinkade Mode</h3>
+                                <p className="text-xs text-white/40 text-pretty">Painter of light & cosmic glow</p>
                             </div>
                         </div>
                         <button
