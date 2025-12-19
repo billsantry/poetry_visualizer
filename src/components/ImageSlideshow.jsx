@@ -3,13 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const ImageSlideshow = ({ images, currentIndex, onIndexChange }) => {
     useEffect(() => {
-        // Auto-advance every 5 seconds
-        const interval = setInterval(() => {
-            onIndexChange((currentIndex + 1) % images.length);
-        }, 5000);
+        const currentSegment = images[currentIndex].segment;
+        // Total animation entry time: last char delay (0.03s * length) + transition duration (0.3s)
+        const entryAnimationMs = (currentSegment.length * 30) + 300;
+        const dwellTimeMs = 4000;
+        const totalDuration = entryAnimationMs + dwellTimeMs;
 
-        return () => clearInterval(interval);
-    }, [currentIndex, images.length, onIndexChange]);
+        const timer = setTimeout(() => {
+            onIndexChange((currentIndex + 1) % images.length);
+        }, totalDuration);
+
+        return () => clearTimeout(timer);
+    }, [currentIndex, images, onIndexChange]);
 
     const currentImage = images[currentIndex];
 

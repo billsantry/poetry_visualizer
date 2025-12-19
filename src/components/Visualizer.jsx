@@ -126,37 +126,45 @@ const Visualizer = ({ poem, onBack, isSpiritual }) => {
                                     key={currentIndex}
                                     className="text-2xl md:text-3xl font-serif leading-loose drop-shadow-2xl bg-black/30 p-6 rounded-lg backdrop-blur-sm"
                                 >
-                                    {images[currentIndex].segment.split(' ').map((word, wordIdx) => (
-                                        <span key={wordIdx} className="inline-block whitespace-nowrap">
-                                            {word.split('').map((char, charIdx) => {
-                                                const globalIdx = images[currentIndex].segment.indexOf(word) + charIdx;
-                                                return (
-                                                    <motion.span
-                                                        key={charIdx}
-                                                        initial={{ opacity: 0, y: 20, scale: 0.5 }}
-                                                        animate={{
-                                                            opacity: 1,
-                                                            y: [0, -3, 0],
-                                                            scale: [1, 1.05, 1],
-                                                        }}
-                                                        transition={{
-                                                            opacity: { delay: globalIdx * 0.03, duration: 0.3 },
-                                                            y: {
-                                                                delay: globalIdx * 0.03 + 0.5,
-                                                                duration: 2,
-                                                                repeat: Infinity,
-                                                                ease: "easeInOut"
-                                                            }
-                                                        }}
-                                                        className="inline-block text-white"
-                                                    >
-                                                        {char}
-                                                    </motion.span>
-                                                );
-                                            })}
-                                            <span className="inline-block">&nbsp;</span>
-                                        </span>
-                                    ))}
+                                    {(() => {
+                                        let charCount = 0;
+                                        return images[currentIndex].segment.split(' ').map((word, wordIdx) => {
+                                            const wordChars = word.split('');
+                                            const result = (
+                                                <span key={wordIdx} className="inline-block whitespace-nowrap">
+                                                    {wordChars.map((char, charIdx) => {
+                                                        const globalIdx = charCount + charIdx;
+                                                        return (
+                                                            <motion.span
+                                                                key={charIdx}
+                                                                initial={{ opacity: 0, y: 20, scale: 0.5 }}
+                                                                animate={{
+                                                                    opacity: 1,
+                                                                    y: [0, -3, 0],
+                                                                    scale: [1, 1.05, 1],
+                                                                }}
+                                                                transition={{
+                                                                    opacity: { delay: globalIdx * 0.03, duration: 0.3 },
+                                                                    y: {
+                                                                        delay: globalIdx * 0.03 + 0.5,
+                                                                        duration: 2,
+                                                                        repeat: Infinity,
+                                                                        ease: "easeInOut"
+                                                                    }
+                                                                }}
+                                                                className="inline-block text-white"
+                                                            >
+                                                                {char}
+                                                            </motion.span>
+                                                        );
+                                                    })}
+                                                    <span className="inline-block">&nbsp;</span>
+                                                </span>
+                                            );
+                                            charCount += wordChars.length + 1; // +1 for the space
+                                            return result;
+                                        });
+                                    })()}
                                 </motion.div>
                             </motion.div>
                         </div>
