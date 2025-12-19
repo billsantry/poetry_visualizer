@@ -56,7 +56,13 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         const isMid = !isFirst && !isLast;
 
         // Build the prompt with consistent style
-        let prompt = `A beautiful ${consistentStyle} depicting: ${segment}.`;
+        let stylePrefix = isSpiritual ? 'A beautiful' : 'An authentic, organic, hand-crafted';
+        let prompt = `${stylePrefix} ${consistentStyle} depicting: ${segment}.`;
+
+        // Default mode gets extra organic texture keywords
+        if (!isSpiritual) {
+            prompt += ' Tactile artistic quality, artisan hand-crafted technique, visible surface texture, analog film grain, natural imperfections, charcoal and ink lithograph look.';
+        }
 
         // Add scenery context if available
         if (analysis.scenery && analysis.scenery !== 'neutral') {
@@ -88,6 +94,10 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         // CRITICAL CONSTRAINTS: No people, no text
         prompt += ' NO people, NO human figures, NO faces, NO text, NO letters, NO typography, NO words in the image.';
         prompt += ' Pure landscape or abstract composition only.';
+
+        // Negative constraints to avoid AI "airbrushed" look
+        prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, avoid digital sharpness.';
+
         if (isSpiritual) {
             prompt += ' Add shimmering particles, ethereal wisps of light, and a sense of infinite cosmic space.';
         }

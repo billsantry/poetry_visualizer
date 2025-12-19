@@ -2,86 +2,114 @@ import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
+import WorldBuilder from './WorldBuilder';
 
-const ParticleField = ({ analysis, rnd }) => {
-    const count = 2000;
-    const mesh = useRef();
-    const dummy = useMemo(() => new THREE.Object3D(), []);
+const ParticleField = ({ analysis, rnd, isSpiritual }) => {
+    const count = 3000;
+    const pointsRef = useRef();
 
+    // Memoize initial particle data
     const particles = useMemo(() => {
-        const temp = [];
+        const positions = new Float32Array(count * 3);
+        const speeds = new Float32Array(count);
+        const sizes = new Float32Array(count);
+
         for (let i = 0; i < count; i++) {
-            const t = rnd() * 100;
-            const factor = 20 + rnd() * 100;
-            const speed = 0.01 + rnd() / 200;
-            const x = rnd() * 100 - 50;
-            const y = rnd() * 100 - 50;
-            const z = rnd() * 100 - 50;
-            temp.push({ t, factor, speed, x, y, z, mx: 0, my: 0 });
+            positions[i * 3] = (rnd() - 0.5) * 100;     // X
+            positions[i * 3 + 1] = (rnd() - 0.5) * 100; // Y
+            positions[i * 3 + 2] = (rnd() - 0.5) * 200 - 100; // Z (deeper field)
+            speeds[i] = 0.5 + rnd() * 1.5; // Variation in speed
+            sizes[i] = 0.05 + rnd() * 0.15;
         }
-        return temp;
+        return { positions, speeds, sizes };
     }, [count, rnd]);
 
-    // Determine colors based on mood
     const color = useMemo(() => {
         switch (analysis.mood) {
-            case 'dark': return new THREE.Color('#1a1a1a');
-            case 'romantic': return new THREE.Color('#ff0066');
-            case 'nature': return new THREE.Color('#00ff44');
-            case 'energetic': return new THREE.Color('#ffaa00');
-            case 'melancholy': return new THREE.Color('#0066ff');
+            case 'dark': return new THREE.Color('#666688');
+            case 'romantic': return new THREE.Color('#ffccf0');
+            case 'nature': return new THREE.Color('#ccffdd');
+            case 'energetic': return new THREE.Color('#ffffcc');
+            case 'melancholy': return new THREE.Color('#ddeeff');
             default: return new THREE.Color('#ffffff');
         }
     }, [analysis.mood]);
 
     useFrame((state) => {
-        if (!mesh.current) return;
+        if (!pointsRef.current) return;
 
-        particles.forEach((particle, i) => {
-            let { factor, speed, x, y, z } = particle;
+        const attr = pointsRef.current.geometry.attributes.position;
+        const tempo = analysis.tempo || 1;
 
-            // Update time based on tempo
-            particle.t += speed / 2 * (analysis.tempo * 2);
-            const { t } = particle;
+        for (let i = 0; i < count; i++) {
+            // Move forward (towards camera at Z=30)
+            attr.array[i * 3 + 2] += particles.speeds[i] * tempo * 0.5;
 
-            // Movement logic
-            const a = Math.cos(t) + Math.sin(t * 1) / 10;
-            const b = Math.sin(t) + Math.cos(t * 2) / 10;
-            const s = Math.cos(t);
+            // Reset when passed camera
+            if (attr.array[i * 3 + 2] > 35) {
+                attr.array[i * 3 + 2] = -150; // Reset far back
+                attr.array[i * 3] = (rnd() - 0.5) * 100;
+                attr.array[i * 3 + 1] = (rnd() - 0.5) * 100;
+            }
+        }
+        attr.needsUpdate = true;
 
-            particle.mx += (state.mouse.x * 100 - particle.mx) * 0.01;
-            particle.my += (state.mouse.y * 100 - 1 - particle.my) * 0.01;
-
-            dummy.position.set(
-                (particle.mx / 10) * a + x + Math.cos((t / 10) * factor) + (Math.sin(t * 1) * factor) / 10,
-                (particle.my / 10) * b + y + Math.sin((t / 10) * factor) + (Math.cos(t * 2) * factor) / 10,
-                (particle.my / 10) * b + z + Math.cos((t / 10) * factor) + (Math.sin(t * 3) * factor) / 10
-            );
-
-            dummy.scale.set(s, s, s);
-            dummy.rotation.set(s * 5, s * 5, s * 5);
-            dummy.updateMatrix();
-
-            mesh.current.setMatrixAt(i, dummy.matrix);
-        });
-        mesh.current.instanceMatrix.needsUpdate = true;
+        // Subtle camera jitter based on tempo
+        state.camera.position.x = Math.sin(state.clock.elapsedTime * 0.5) * 0.2 * tempo;
+        state.camera.position.y = Math.cos(state.clock.elapsedTime * 0.3) * 0.2 * tempo;
     });
 
+    // Create a circular texture for round particles
+    const circleTexture = useMemo(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.arc(32, 32, 30, 0, Math.PI * 2);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+    }, []);
+
     return (
-        <instancedMesh ref={mesh} args={[null, null, count]}>
-            <dodecahedronGeometry args={[0.2, 0]} />
-            <meshPhongMaterial color={color} />
-        </instancedMesh>
+        <points ref={pointsRef}>
+            <bufferGeometry>
+                <bufferAttribute
+                    attach="attributes-position"
+                    count={count}
+                    array={particles.positions}
+                    itemSize={3}
+                />
+            </bufferGeometry>
+            <pointsMaterial
+                size={0.25}
+                color={color}
+                map={circleTexture}
+                transparent
+                opacity={isSpiritual ? 0.9 : 0.6}
+                sizeAttenuation={true}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+            />
+        </points>
     );
 };
 
-const Scene = ({ analysis, rnd }) => {
+const Scene = ({ analysis, rnd, isSpiritual }) => {
     return (
         <div className="absolute inset-0 z-0">
             <Canvas camera={{ position: [0, 0, 30], fov: 75 }}>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={1} />
-                <ParticleField analysis={analysis} rnd={rnd} />
+
+                {/* Always show particles, but adjust opacity via material */}
+                <ParticleField analysis={analysis} rnd={rnd} isSpiritual={isSpiritual} />
+
+                {/* Only show WorldBuilder (terrain/trees) in default mode */}
+                {!isSpiritual && <WorldBuilder analysis={analysis} rnd={rnd} />}
+
                 <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
                 <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={analysis.tempo} />
             </Canvas>

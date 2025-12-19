@@ -23,10 +23,13 @@ const ImageSlideshow = ({ images, currentIndex, onIndexChange }) => {
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentIndex}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    initial={{ opacity: 0, scale: 1.0 }}
+                    animate={{ opacity: 1, scale: 1.15 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1.5 }}
+                    transition={{
+                        opacity: { duration: 1.5 },
+                        scale: { duration: 10, ease: "linear" }
+                    }}
                     className="absolute inset-0"
                 >
                     <div

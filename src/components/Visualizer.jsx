@@ -76,15 +76,9 @@ const Visualizer = ({ poem, onBack, isSpiritual }) => {
             {!loading && !error && images.length > 0 && (
                 <>
                     {/* 3D Visual Layer (Over Imagery) */}
-                    {isSpiritual ? (
-                        <div className="absolute inset-0 z-20 opacity-60 pointer-events-none">
-                            <Scene analysis={analysis} rnd={rnd} />
-                        </div>
-                    ) : (
-                        <div className="absolute inset-0 z-20 opacity-20 pointer-events-none">
-                            <WorldBuilder analysis={analysis} rnd={rnd} />
-                        </div>
-                    )}
+                    <div className="absolute inset-0 z-20 pointer-events-none">
+                        <Scene analysis={analysis} rnd={rnd} isSpiritual={isSpiritual} />
+                    </div>
 
                     <div className="absolute inset-0 z-10">
                         <ImageSlideshow
@@ -124,7 +118,7 @@ const Visualizer = ({ poem, onBack, isSpiritual }) => {
                             >
                                 <motion.div
                                     key={currentIndex}
-                                    className="text-2xl md:text-3xl font-serif leading-loose drop-shadow-2xl bg-black/30 p-6 rounded-lg backdrop-blur-sm"
+                                    className="text-2xl md:text-3xl font-serif leading-loose drop-shadow-2xl bg-black/20 p-6 rounded-lg backdrop-blur-sm"
                                 >
                                     {(() => {
                                         let charCount = 0;
