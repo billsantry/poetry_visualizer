@@ -43,7 +43,7 @@ const ParticleField = ({ analysis, rnd, isSpiritual }) => {
 
         for (let i = 0; i < count; i++) {
             // Move forward (towards camera at Z=30)
-            attr.array[i * 3 + 2] += particles.speeds[i] * tempo * 0.5;
+            attr.array[i * 3 + 2] += particles.speeds[i] * tempo * 0.425;
 
             // Reset when passed camera
             if (attr.array[i * 3 + 2] > 35) {
@@ -88,7 +88,7 @@ const ParticleField = ({ analysis, rnd, isSpiritual }) => {
                 color={color}
                 map={circleTexture}
                 transparent
-                opacity={isSpiritual ? 0.9 : 0.6}
+                opacity={isSpiritual ? 0.75 : 0.45}
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
