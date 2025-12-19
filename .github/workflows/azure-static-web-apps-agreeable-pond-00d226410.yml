@@ -32,6 +32,11 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+        env:
+          VITE_OPENAI_API_KEY: ${{ secrets.VITE_OPENAI_API_KEY }}
+          VITE_DALLE_MODEL: "dall-e-3"
+          VITE_DALLE_QUALITY: "standard"
+          VITE_DALLE_SIZE: "1024x1024"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
