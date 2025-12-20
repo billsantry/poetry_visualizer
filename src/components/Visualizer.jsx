@@ -235,9 +235,17 @@ const Visualizer = ({ poem, onBack }) => {
                             >
                                 <motion.div
                                     key={currentIndex}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="text-4xl md:text-6xl font-normal leading-relaxed text-white"
+                                    initial={{ opacity: 0, y: 10, scale: 1 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1.2 }}
+                                    transition={{
+                                        opacity: { duration: 0.8, ease: "easeOut" },
+                                        y: { duration: 0.8, ease: "easeOut" },
+                                        scale: {
+                                            duration: ((images[currentIndex].segment.length * 30) + 7300) / 1000,
+                                            ease: "linear"
+                                        }
+                                    }}
+                                    className="text-4xl md:text-6xl font-normal leading-relaxed text-white origin-center"
                                     style={{
                                         fontFamily: "'EB Garamond', serif",
                                         letterSpacing: '0.05em',
