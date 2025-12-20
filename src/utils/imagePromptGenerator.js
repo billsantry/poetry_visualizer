@@ -93,7 +93,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         if (isSpiritual) {
             prompt += ' Soft ethereality, simple light.';
         } else {
-            prompt += ' Crude, expressive, unrefined, authentic outsider art.';
+            prompt += ' Crude, expressive, unrefined, amateur, authentic outsider art.';
         }
 
         return {
