@@ -5,7 +5,7 @@ const sanitizePrompt = (text) => {
     const restricted = [
         'death', 'dead', 'die', 'blood', 'kill', 'murder', 'suicide', 'war', 'battle', 'weapon',
         'gun', 'knife', 'attack', 'violence', 'naked', 'explicit', 'divine', 'god', 'religious',
-        'demon', 'hell', 'evil', 'terror', 'bomb', 'crash', 'pain', 'suffering'
+        'demon', 'hell', 'evil', 'terror', 'bomb', 'crash', 'pain', 'suffering', 'explode', 'exploding'
     ];
 
     let sanitized = text.toLowerCase();
