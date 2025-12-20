@@ -26,7 +26,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
     // Determine ONE consistent artistic style - forcing "Bob Dylan / Big Pink" aesthetic
     let consistentStyle = '';
     // Base style that applies to all non-spiritual directives to capture that specific look
-    const baseRawStyle = "naive outsider art, raw loose brushwork, flat perspective, gouache on paper texture, muted earthy palette";
+    const baseRawStyle = "Thrift-shop abstract art, naive outsider art, raw loose brushwork, flat perspective, gouache on paper texture, muted earthy palette, found art";
 
     switch (analysis.mood) {
         case 'dark':
