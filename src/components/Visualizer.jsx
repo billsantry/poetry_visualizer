@@ -185,8 +185,8 @@ const Visualizer = ({ poem, onBack }) => {
                             </div>
 
                             <div className="fixed bottom-6 left-0 right-0 text-center z-50 pointer-events-none">
-                                <p className="text-white/30 text-sm tracking-widest uppercase font-sans font-medium pointer-events-auto inline-block">
-                                    Created with <a href="https://deepmind.google/technologies/antigravity/" target="_blank" rel="noreferrer" className="hover:text-white/60 transition-colors underline decoration-white/20 underline-offset-4">Google AntiGravity</a> by <a href="https://billsantry.com" target="_blank" rel="noreferrer" className="hover:text-white/60 transition-colors underline decoration-white/20 underline-offset-4">billsantry</a>
+                                <p className="text-white/50 text-base tracking-widest uppercase font-sans font-medium pointer-events-auto inline-block">
+                                    Created with <a href="https://deepmind.google/technologies/antigravity/" target="_blank" rel="noreferrer" className="hover:text-white/80 transition-colors underline decoration-white/20 underline-offset-4">Google AntiGravity</a> by <a href="https://billsantry.com" target="_blank" rel="noreferrer" className="hover:text-white/80 transition-colors underline decoration-white/20 underline-offset-4">billsantry</a>
                                 </p>
                             </div>
                         </div>
