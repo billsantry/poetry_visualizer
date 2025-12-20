@@ -81,7 +81,11 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         }
 
         // CRITICAL CONSTRAINTS: No people, no text
-        prompt += ' Pure nature, NO people, NO characters, NO text, NO words.';
+        prompt += ' NO people, NO human figures, NO faces, NO text, NO letters, NO typography, NO words in the image.';
+        prompt += ' Focus strictly on the subjects and metaphors mentioned in the segment. AVOID generic landscapes unless specified.';
+
+        // Negative constraints to avoid AI "airbrushed" look
+        prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, avoid digital sharpness.';
 
         if (isSpiritual) {
             prompt += ' Soft ethereality, simple light.';
