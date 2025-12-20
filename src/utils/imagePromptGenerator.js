@@ -66,7 +66,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         let prompt = `${stylePrefix} ${cleanStyle} depicting: ${cleanSegment}.`;
 
         if (!isSpiritual) {
-            prompt += ' Style of Bob Dylan paintings, album cover art style (Music from Big Pink), naive folk art, visible rough brushstrokes, unpolished finish, heavy impasto, messy authentic texture.';
+            prompt += ' Style of Bob Dylan paintings, album cover art style (Music from Big Pink), naive folk art. Tactile artistic quality, artisan hand-crafted technique, visible surface texture, analog film grain, natural imperfections, charcoal and ink lithograph look.';
         }
 
         // Add scenery
