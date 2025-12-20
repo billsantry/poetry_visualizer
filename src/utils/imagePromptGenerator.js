@@ -76,7 +76,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
 
         // Add VARIED composition and camera angles for visual interest
         if (isFirst) {
-            prompt += ' WIDE SHOT: Expansive establishing view, panoramic perspective, distant viewpoint showing the full environment.';
+            prompt += ' BALANCED SHOT: Cinematic view establishing the scene and its mood.';
         } else if (isLast) {
             prompt += ' DRAMATIC CLOSE-UP: Intimate detail shot, tight framing, macro perspective with shallow depth of field, final emotional emphasis.';
         } else if (index === 1 && segments.length > 2) {
@@ -93,7 +93,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
 
         // CRITICAL CONSTRAINTS: No people, no text
         prompt += ' NO people, NO human figures, NO faces, NO text, NO letters, NO typography, NO words in the image.';
-        prompt += ' Pure landscape or abstract composition only.';
+        prompt += ' Focus strictly on the subjects and metaphors mentioned in the segment. AVOID generic landscapes unless specified.';
 
         // Negative constraints to avoid AI "airbrushed" look
         prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, avoid digital sharpness.';
