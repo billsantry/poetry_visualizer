@@ -23,26 +23,29 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
     // Generate one segment per line for a true one-to-one visualization
     const segments = lines.map(line => line.trim());
 
-    // Determine ONE consistent artistic style
+    // Determine ONE consistent artistic style - forcing "Bob Dylan / Big Pink" aesthetic
     let consistentStyle = '';
+    // Base style that applies to all non-spiritual directives to capture that specific look
+    const baseRawStyle = "naive outsider art, raw loose brushwork, flat perspective, gouache on paper texture, muted earthy palette";
+
     switch (analysis.mood) {
         case 'dark':
-            consistentStyle = 'moody atmospheric oil painting with shadows and rich colors';
+            consistentStyle = `${baseRawStyle}, moody shadows, somber tones, rough expressionist strokes`;
             break;
         case 'romantic':
-            consistentStyle = 'soft romantic watercolor painting with warm tones and dreamy atmosphere';
+            consistentStyle = `${baseRawStyle}, soft but messy, warm washed-out colors, sentimental folk art`;
             break;
         case 'nature':
-            consistentStyle = 'impressionist landscape painting with natural colors and loose brushwork';
+            consistentStyle = `${baseRawStyle}, rustic landscape, organic forms, unrefined details`;
             break;
         case 'energetic':
-            consistentStyle = 'bold expressive abstract painting with dynamic colors and brushstrokes';
+            consistentStyle = `${baseRawStyle}, chaotic brushstrokes, vivid raw colors, dynamic and crudes`;
             break;
         case 'melancholy':
-            consistentStyle = 'contemplative painting with muted blue-grey tones and atmospheric perspective';
+            consistentStyle = `${baseRawStyle}, sparse composition, blue-grey washes, lonely atmosphere`;
             break;
         default:
-            consistentStyle = 'serene artistic landscape painting with soft colors';
+            consistentStyle = `${baseRawStyle}, simple composition, unpretentious execution`;
     }
 
     if (isSpiritual) {
@@ -59,11 +62,11 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         const cleanSegment = sanitizePrompt(segment);
         const cleanStyle = sanitizePrompt(consistentStyle);
 
-        let stylePrefix = isSpiritual ? 'A beautiful' : 'An organic, hand-crafted';
+        let stylePrefix = isSpiritual ? 'A beautiful' : 'A raw, hand-painted';
         let prompt = `${stylePrefix} ${cleanStyle} depicting: ${cleanSegment}.`;
 
         if (!isSpiritual) {
-            prompt += ' Amateur painterly style, visible thick brushstrokes, naive art quality, tactile surface, authentic folk art feel.';
+            prompt += ' Style of Bob Dylan paintings, album cover art style (Music from Big Pink), naive folk art, visible rough brushstrokes, unpolished finish, heavy impasto, messy authentic texture.';
         }
 
         // Add scenery
@@ -85,13 +88,13 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         prompt += ' Focus strictly on the subjects and metaphors mentioned in the segment. AVOID generic landscapes unless specified.';
 
         // Negative constraints to avoid AI "airbrushed" look
-        prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, avoid digital sharpness.';
+        prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, no hyper-realism, no polish.';
 
         if (isSpiritual) {
             prompt += ' Soft ethereality, simple light.';
+        } else {
+            prompt += ' Crude, expressive, unrefined, authentic outsider art.';
         }
-
-        prompt += ' Naive aesthetic, unpolished amateur painting style.';
 
         return {
             segment,
