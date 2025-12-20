@@ -41,8 +41,8 @@ const Visualizer = ({ poem, onBack }) => {
                             return newImages;
                         });
 
-                        // Once the first image is ready, start the visualization
-                        if (i === 0) {
+                        // Start visualization after 3 images (or all if < 3) are ready to build a buffer
+                        if (i === 2 || (i === prompts.length - 1 && i < 2)) {
                             setLoading(false);
                         }
 
