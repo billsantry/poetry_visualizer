@@ -34,7 +34,7 @@ jobs:
           ###### End of Repository/Build Configurations ######
         env:
           VITE_OPENAI_API_KEY: ${{ secrets.VITE_OPENAI_API_KEY }}
-          VITE_DALLE_MODEL: "dall-e-2"
+          VITE_DALLE_MODEL: "dall-e-3"
           VITE_DALLE_QUALITY: "standard"
           VITE_DALLE_SIZE: "1024x1024"
 
