@@ -13,6 +13,7 @@ export const generateImages = async (prompts) => {
 
     try {
         const imagePromises = prompts.map(async (promptData) => {
+            console.log(`Generating image with ${model}:`, promptData.prompt);
             const response = await openai.images.generate({
                 model,
                 prompt: promptData.prompt,

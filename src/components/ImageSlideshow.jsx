@@ -1,34 +1,39 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ImageSlideshow = ({ images, currentIndex, onIndexChange }) => {
+const ImageSlideshow = ({ images, currentIndex, onIndexChange, onComplete }) => {
     useEffect(() => {
         const currentSegment = images[currentIndex].segment;
         // Total animation entry time: last char delay (0.03s * length) + transition duration (0.3s)
         const entryAnimationMs = (currentSegment.length * 30) + 300;
-        const dwellTimeMs = 4000;
+        const dwellTimeMs = 7000;
         const totalDuration = entryAnimationMs + dwellTimeMs;
 
         const timer = setTimeout(() => {
-            onIndexChange((currentIndex + 1) % images.length);
+            const nextIndex = currentIndex + 1;
+            if (nextIndex < images.length) {
+                onIndexChange(nextIndex);
+            } else {
+                if (onComplete) onComplete();
+            }
         }, totalDuration);
 
         return () => clearTimeout(timer);
-    }, [currentIndex, images, onIndexChange]);
+    }, [currentIndex, images, onIndexChange, onComplete]);
 
     const currentImage = images[currentIndex];
 
     return (
         <div className="relative w-full h-screen overflow-hidden">
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
                 <motion.div
                     key={currentIndex}
                     initial={{ opacity: 0, scale: 1.0 }}
                     animate={{ opacity: 1, scale: 1.15 }}
                     exit={{ opacity: 0 }}
                     transition={{
-                        opacity: { duration: 1.5 },
-                        scale: { duration: 10, ease: "linear" }
+                        opacity: { duration: 2, ease: "easeInOut" },
+                        scale: { duration: 12, ease: "linear" }
                     }}
                     className="absolute inset-0"
                 >

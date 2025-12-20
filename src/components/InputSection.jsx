@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Moon, Sun } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
-const InputSection = ({ onVisualize, isSpiritual, setIsSpiritual }) => {
+const InputSection = ({ onVisualize }) => {
     const [text, setText] = useState('');
 
     const handleSubmit = (e) => {
@@ -19,58 +19,44 @@ const InputSection = ({ onVisualize, isSpiritual, setIsSpiritual }) => {
             exit={{ opacity: 0, y: -20 }}
             className="flex flex-col items-center justify-center min-h-screen p-4 w-full max-w-4xl mx-auto"
         >
-            <div className="w-full bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
-                <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-8 text-center font-serif">
-                    Poetry Visualizer
-                </h1>
+            <div className="w-full bg-white/5 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
+                <div className="flex flex-col items-center mb-16">
+                    <h1 className="text-xl md:text-3xl font-normal text-white text-center uppercase tracking-[0.3em] flex items-center gap-4" style={{ fontFamily: "'EB Garamond', serif", fontVariant: "small-caps" }}>
+                        <span className="text-white/60 text-2xl">❧</span>
+                        Poetry Visualizer
+                        <span className="text-white/60 text-2xl">❧</span>
+                    </h1>
+                    <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mt-6" />
+                </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-8">
                     <div className="relative">
                         <textarea
                             value={text}
                             onChange={(e) => setText(e.target.value)}
                             placeholder="Enter your poem here..."
-                            className="w-full h-64 bg-black/20 rounded-xl p-6 text-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none transition-all duration-300 font-serif leading-relaxed"
+                            className="w-full h-64 bg-black/40 rounded-xl p-6 text-lg text-white/90 placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-white/20 resize-none transition-all duration-300 font-sans leading-relaxed border border-white/5"
                         />
-                        <div className="absolute bottom-4 right-4 text-xs text-white/30">
+                        <div className="absolute bottom-4 right-4 text-xs text-white/20 font-sans">
                             {text.length} chars
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between bg-black/30 rounded-xl p-4 border border-white/10">
-                        <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${isSpiritual ? 'bg-purple-500/20 text-purple-400' : 'bg-white/10 text-white/40'}`}>
-                                <Moon className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-sm">Thomas Kinkade Mode</h3>
-                                <p className="text-xs text-white/40 text-pretty">Painter of light & cosmic glow</p>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => setIsSpiritual(!isSpiritual)}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${isSpiritual ? 'bg-purple-600' : 'bg-gray-700'}`}
+                    <div className="flex justify-center">
+                        <motion.button
+                            whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,1)' }}
+                            whileTap={{ scale: 0.98 }}
+                            type="submit"
+                            disabled={!text.trim()}
+                            className="relative px-16 py-4 bg-white/90 text-black border-2 border-white rounded-sm font-bold shadow-[0_0_30px_rgba(255,255,255,0.1)] disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-500 overflow-hidden uppercase tracking-[0.25em] text-xl md:text-2xl hover:bg-white active:scale-[0.98]"
+                            style={{ fontFamily: "'EB Garamond', serif" }}
                         >
-                            <span
-                                className={`${isSpiritual ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                            />
-                        </button>
+                            <span className="relative flex items-center justify-center gap-3">
+                                Visualize Poem
+                                <span className="text-5xl opacity-80 leading-none" style={{ marginTop: '-2px' }}>☞</span>
+                            </span>
+                        </motion.button>
                     </div>
-
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        type="submit"
-                        disabled={!text.trim()}
-                        className="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
-                    >
-                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                        <span className="relative flex items-center justify-center gap-2">
-                            <Sparkles className="w-5 h-5" />
-                            Visualize Poem
-                        </span>
-                    </motion.button>
                 </form>
             </div>
         </motion.div>

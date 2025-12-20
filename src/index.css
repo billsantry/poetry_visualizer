@@ -1,12 +1,13 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'EB Garamond', serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: #0a0a10;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -25,4 +26,14 @@ body {
 #root {
   width: 100%;
   height: 100%;
+}
+
+.arctic-sunrise {
+  background: linear-gradient(180deg,
+      #050510 0%,
+      #0a0a25 35%,
+      #1a2040 55%,
+      #2d3e6d 70%,
+      #8e5d32 85%,
+      #d4a25f 100%);
 }
