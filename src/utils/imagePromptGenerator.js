@@ -3,15 +3,25 @@ const sanitizePrompt = (text) => {
 
     // Words that often trigger safety filters, even in poetic context
     const restricted = [
-        'death', 'dead', 'die', 'blood', 'kill', 'murder', 'suicide', 'war', 'battle', 'weapon',
-        'gun', 'knife', 'attack', 'violence', 'naked', 'explicit', 'divine', 'god', 'religious',
-        'demon', 'hell', 'evil', 'terror', 'bomb', 'crash', 'pain', 'suffering', 'explode', 'exploding', 'wreck', 'wrecked'
+        'death', 'dead', 'die', 'killed', 'killing', 'suicide', 'murder', 'gore',
+        'blood', 'bleeding', 'wounded', 'injury', 'hurt', 'pain', 'suffering',
+        'war', 'battle', 'weapon', 'gun', 'knife', 'bomb', 'blast', 'explosion',
+        'attack', 'violence', 'violent', 'fight', 'fighting', 'beaten',
+        'naked', 'nude', 'sexual', 'sex', 'intimate', 'sensual', 'erotic', 'breasts', 'nipple', 'genitals',
+        'drug', 'cocaine', 'heroin', 'abuse', 'addict',
+        'demon', 'devil', 'hell', 'satan', 'cult', 'ritual', 'evil',
+        'terror', 'horror', 'nightmare', 'frightening', 'scary',
+        'explicit', 'nsfw', 'graphic', 'disturbing',
+        'hate', 'racist', 'slur', 'offensive'
     ];
 
     let sanitized = text.toLowerCase();
+
+    // Replace whole words only to avoid replacing inside other words (e.g., "gun" in "shogun") - though shoguns are cool, we want to be safe.
     restricted.forEach(word => {
+        // Match word boundary to avoid false positives (e.g. 'hell' in 'shell')
         const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        sanitized = sanitized.replace(regex, 'atmospheric');
+        sanitized = sanitized.replace(regex, 'abstract form');
     });
 
     return sanitized;
