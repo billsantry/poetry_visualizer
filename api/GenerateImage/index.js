@@ -66,10 +66,10 @@ async function generateImagen(prompt, context) {
     // Initialize Google Auth
     // Expects GOOGLE_APPLICATION_CREDENTIALS env var (path to JSON) 
     // OR default credentials available in environment.
-    // If running in Azure with just env vars, user might need to supply credentials in a custom way,
-    // but standard GoogleAuth checks strictly.
     const auth = new GoogleAuth({
-        scopes: 'https://www.googleapis.com/auth/cloud-platform'
+        scopes: 'https://www.googleapis.com/auth/cloud-platform',
+        // Attempt to support direct API key if provided (though Vertex often rejects this)
+        apiKey: process.env.GOOGLE_API_KEY || process.env.poetry_visualizer_backup
     });
 
     const client = await auth.getClient();
