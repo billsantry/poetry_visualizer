@@ -17,7 +17,7 @@ const InputSection = ({ onVisualize }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="flex flex-col items-center justify-center min-h-screen p-4 w-full max-w-4xl mx-auto"
+            className="flex flex-col items-center justify-center min-h-screen p-4 w-full max-w-4xl mx-auto mt-[-10vh]"
         >
             <div className="w-full bg-white/5 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
                 <div className="flex flex-col items-center mb-16">
@@ -61,7 +61,7 @@ const InputSection = ({ onVisualize }) => {
             </div>
 
             <div className="fixed bottom-6 left-0 right-0 text-center z-50 pointer-events-none">
-                <p className="text-black/60 text-base tracking-widest uppercase font-sans font-medium pointer-events-auto inline-block bg-black/5 backdrop-blur-sm py-2 px-4 rounded-full">
+                <p className="text-black/60 text-base tracking-widest uppercase font-sans font-medium pointer-events-auto w-full bg-black/20 backdrop-blur-sm py-3">
                     Created with <a href="https://antigravity.google/" target="_blank" rel="noreferrer" className="hover:text-black/80 transition-colors underline decoration-black/20 underline-offset-4">Google AntiGravity</a> by <a href="https://billsantry.com" target="_blank" rel="noreferrer" className="hover:text-black/80 transition-colors underline decoration-black/20 underline-offset-4">billsantry</a>
                 </p>
             </div>
