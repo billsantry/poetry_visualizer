@@ -8,8 +8,6 @@
 
 <p align="center">
   <img src="src/assets/demo.jpg" alt="Poetry Visualizer Demo" width="100%" style="border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-  <br>
-  <em>(Add your demo recording here as assets/demo.gif)</em>
 </p>
 
 ## ✨ About The Project
