@@ -241,7 +241,7 @@ const Visualizer = ({ poem, onBack }) => {
                                         opacity: { duration: 0.8, ease: "easeOut" },
                                         y: { duration: 0.8, ease: "easeOut" },
                                         scale: {
-                                            duration: ((images[currentIndex].segment.length * 30) + 7300) / 1000,
+                                            duration: ((images[currentIndex]?.segment.length * 30) + 7300) / 1000,
                                             ease: "linear"
                                         }
                                     }}
@@ -252,7 +252,7 @@ const Visualizer = ({ poem, onBack }) => {
                                         textShadow: '0 2px 15px rgba(0,0,0,0.6)'
                                     }}
                                 >
-                                    {images[currentIndex].segment.split(' ').map((word, wordIdx) => (
+                                    {images[currentIndex] && images[currentIndex].segment.split(' ').map((word, wordIdx) => (
                                         <motion.span
                                             key={`${currentIndex}-${wordIdx}`}
                                             initial={{ opacity: 0, y: 5 }}
