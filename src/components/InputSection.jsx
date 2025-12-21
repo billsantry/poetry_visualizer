@@ -48,7 +48,7 @@ const InputSection = ({ onVisualize }) => {
                             whileTap={{ scale: 0.98 }}
                             type="submit"
                             disabled={!text.trim()}
-                            className="relative px-8 md:px-16 py-4 bg-white/90 text-black border-2 border-white rounded-sm font-bold shadow-[0_0_30px_rgba(255,255,255,0.1)] disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-500 overflow-hidden uppercase tracking-[0.25em] text-lg md:text-2xl hover:bg-white active:scale-[0.98]"
+                            className="relative px-6 md:px-16 py-4 bg-white/90 text-black border-2 border-white rounded-sm font-bold shadow-[0_0_30px_rgba(255,255,255,0.1)] disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-500 overflow-hidden uppercase tracking-[0.15em] md:tracking-[0.25em] text-sm sm:text-base md:text-2xl hover:bg-white active:scale-[0.98]"
                             style={{ fontFamily: "'EB Garamond', serif" }}
                         >
                             <span className="relative flex items-center justify-center gap-3">
