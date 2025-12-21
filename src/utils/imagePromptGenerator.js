@@ -96,7 +96,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         }
 
         // CRITICAL CONSTRAINTS
-        prompt += ' CRITICAL: NO people, NO faces, NO text/typography. NO digital gloss. NO photorealism. The image must look like a physical oil painting.';
+        prompt += ' CRITICAL: NO photorealism. NO text/typography. NO digital gloss. The image must look like a physical oil painting.';
 
         if (isSpiritual) {
             prompt += ' Mood: Ethereal and soft.';
