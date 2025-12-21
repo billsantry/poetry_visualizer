@@ -34,6 +34,9 @@ const sanitizePrompt = (text) => {
     sanitized = sanitized.replace(/\bwhite dove\b/gi, 'pale dove');
     sanitized = sanitized.replace(/\bwhite doves\b/gi, 'pale doves');
 
+    // "Sleeps in the sand" -> "Rests on the sand" (avoids potential "death" interpretation)
+    sanitized = sanitized.replace(/sleeps in the sand/gi, 'rests on the sand');
+
     return sanitized;
 };
 
