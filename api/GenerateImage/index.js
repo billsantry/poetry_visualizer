@@ -1,5 +1,4 @@
 const OpenAI = require('openai');
-const { GoogleAuth } = require('google-auth-library');
 
 module.exports = async function (context, req) {
     const { prompt, size = '1024x1024', quality = 'standard', model = 'dall-e-3' } = req.body;
@@ -60,6 +59,9 @@ async function generateDallE(prompt, size, quality, model, context) {
 }
 
 async function generateImagen(prompt, context) {
+    // Lazy load to prevent crash if dependency is missing
+    const { GoogleAuth } = require('google-auth-library');
+
     const projectId = process.env.GOOGLE_PROJECT_ID;
 
     // Check for API Key (Simple string)
