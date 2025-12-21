@@ -1,0 +1,11 @@
+{
+    "name": "poetry-visualizer-api",
+    "version": "1.0.0",
+    "description": "API for Poetry Visualizer",
+    "scripts": {
+        "start": "func start"
+    },
+    "dependencies": {
+        "openai": "^4.0.0"
+    }
+}

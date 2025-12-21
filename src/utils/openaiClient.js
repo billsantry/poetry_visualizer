@@ -1,41 +1,45 @@
-import OpenAI from 'openai';
-
-// Initialize OpenAI client
-const openai = new OpenAI({
-    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true // Note: Only for development! Use backend proxy in production
-});
-
 export const generateImages = async (prompts) => {
     const model = import.meta.env.VITE_DALLE_MODEL || 'dall-e-3';
     const quality = import.meta.env.VITE_DALLE_QUALITY || 'standard';
     const size = import.meta.env.VITE_DALLE_SIZE || '1024x1024';
 
     try {
-        const imagePromises = prompts.map(async (promptData) => {
+        // Create an array of functions that return promises, to allow for sequential execution control if needed
+        // However, to match previous behavior (which was actually parallel despite the comment), we will map to promises.
+        // But to be safe with rate limits on the server (Azure Functions might scale, but OpenAI rate limits per key apply),
+        // let's actually implement TRUE sequential execution here, as the comment in the original code suggested was the intent.
+
+        const images = [];
+        for (const promptData of prompts) {
             console.log(`Generating image with ${model}:`, promptData.prompt);
-            const response = await openai.images.generate({
-                model,
-                prompt: promptData.prompt,
-                n: 1,
-                size,
-                quality: model === 'dall-e-3' ? quality : undefined,
-                response_format: 'url'
+
+            const response = await fetch('/api/GenerateImage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt: promptData.prompt,
+                    model,
+                    quality,
+                    size
+                })
             });
 
-            return {
-                url: response.data[0].url,
+            if (!response.ok) {
+                const errorText = await response.text();
+                // If it's a rate limit (429), strictly we should back off, but throwing error is the baseline behavior
+                throw new Error(`API Error: ${response.status} - ${errorText}`);
+            }
+
+            const data = await response.json();
+
+            images.push({
+                url: data.url,
                 segment: promptData.segment,
                 index: promptData.index,
-                revisedPrompt: response.data[0].revised_prompt
-            };
-        });
-
-        // Generate images sequentially to avoid rate limits
-        const images = [];
-        for (const promise of imagePromises) {
-            const image = await promise;
-            images.push(image);
+                revisedPrompt: data.revised_prompt
+            });
         }
 
         return images;

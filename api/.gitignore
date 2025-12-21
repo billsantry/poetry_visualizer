@@ -1,0 +1,5 @@
+node_modules
+bin
+obj
+extensions.csproj
+local.settings.json
