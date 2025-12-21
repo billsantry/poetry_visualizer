@@ -65,48 +65,48 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         let stylePrefix = isSpiritual ? 'A beautiful' : 'A raw, hand-painted';
 
         // RESTRUCTURE: Command DALL-E to visualize the text content primarily
-        let prompt = `Visualize this scene described in the text: "${cleanSegment}". Direct visual translations, double meanings, and visual metaphors are encouraged.`;
-
-        // Add style AFTER the content directive
-        prompt += ` ${stylePrefix} ${cleanStyle}.`;
-
-        if (!isSpiritual) {
-            prompt += ' Style of David Park paintings, Bay Area Figurative Movement, thick gestural brushwork, heavy paint application, no fine details, abstract forms. Tactile artistic quality, artisan hand-crafted technique, visible surface texture, analog film grain, natural imperfections, charcoal and ink lithograph look.';
-        }
-
-        // Refined literal instruction
-        prompt += ' FOCUS ON THE MEANING. Capture the literal scene OR a clever visual metaphor. Do NOT revert to a generic landscape unless the text explicitly describes a landscape.';
-
-        // Add scenery merely as an environmental hint
-        if (analysis.scenery && analysis.scenery !== 'neutral') {
-            prompt += ` Environment hint: ${analysis.scenery}.`;
-        }
-
-        // Add composition
-        if (isFirst) {
-            prompt += ' Perspective: Simple wide shot.';
-        } else if (isLast) {
-            prompt += ' Perspective: Straightforward close-up.';
+        // Determine perspective based on content, not just index
+        // Default to close-ups to prevent generic landscapes
+        let perspective = 'Intimate close-up of a specific object.';
+        if (analysis.scenery && analysis.scenery !== 'neutral' && (segment.includes('sky') || segment.includes('world') || segment.includes('field'))) {
+            perspective = 'Wide compositional view.';
         } else if (isMid) {
-            prompt += ' Perspective: Basic eye-level view.';
+            perspective = 'Eye-level focused subject.';
         }
 
-        // CRITICAL CONSTRAINTS: No people, no text
-        prompt += ' NO people, NO human figures, NO faces, NO text, NO letters, NO typography, NO words in the image.';
-        prompt += ' Focus strictly on the specific imagery and metaphors in the text segment. AVOID generic landscapes.';
+        // RESTRUCTURED PROMPT
+        let prompt = `Subject: "${cleanSegment}". Perspective: ${perspective}`;
 
-        // Negative constraints to avoid AI "airbrushed" look
-        prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, no hyper-realism, no polish.';
+        // STYLE: Aggressive push for "Outsider Art" to kill the polish
+        prompt += ` Style: Naive Outsider Art, Raw Art Brut, Crude Oil Painting, Flat perspective, heavily textured impasto.`;
+
+        // INSTRUCTION: Force objects over landscapes
+        prompt += ' INSTRUCTION: Interpret the text as a tangible SYMBOL or OBJECT. If the text mentions "bills", show papers. If "factory", show a wall or gear. Do NOT draw a generic landscape or "atmospheric" scene. Draw the THING named in the text.';
+
+        // Reference specific rough styles
+        if (!isSpiritual) {
+            prompt += ' Aesthetic: Style of David Park and Jean Dubuffet. Sloppy, messy, aggressive brushstrokes. Visible canvas grain. No fine details.';
+        }
+
+        // Add scenery ONLY if it's a specific place, otherwise suppress environment
+        if (analysis.scenery && analysis.scenery !== 'neutral') {
+            prompt += ` Setting: ${analysis.scenery}.`;
+        } else {
+            prompt += ' Setting: abstract void or flat colored background.';
+        }
+
+        // CRITICAL CONSTRAINTS
+        prompt += ' CRITICAL: NO people, NO faces, NO text/typography. NO digital gloss. NO photorealism. The image must look like a rough, physical painting found in a basement.';
 
         if (isSpiritual) {
-            prompt += ' Soft ethereality, simple light.';
+            prompt += ' Mood: Ethereal and soft.';
         } else {
-            prompt += ' Crude, expressive, unrefined, amateur, authentic outsider art.';
+            prompt += ' Mood: Raw, unpolished, authentic.';
         }
 
         return {
             segment,
-            prompt: prompt.slice(0, 1000), // Slightly increased limit for DALL-E 3
+            prompt: prompt.slice(0, 1000),
             index
         };
     });
