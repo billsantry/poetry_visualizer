@@ -26,7 +26,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
     // Determine ONE consistent artistic style - forcing "Bob Dylan / Big Pink" aesthetic
     let consistentStyle = '';
     // Base style that applies to all non-spiritual directives to capture that specific look
-    const baseRawStyle = "Thrift-shop abstract art, naive outsider art, raw loose brushwork, flat perspective, gouache on paper texture, muted earthy palette, found art";
+    const baseRawStyle = "Style of David Park, Bay Area Figurative Movement, thick impasto, bold broad brushstrokes, abstract expressionism, rich muted colors, gouache feel";
 
     switch (analysis.mood) {
         case 'dark':
@@ -66,7 +66,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         let prompt = `${stylePrefix} ${cleanStyle} depicting: ${cleanSegment}.`;
 
         if (!isSpiritual) {
-            prompt += ' Style of Bob Dylan paintings, album cover art style (Music from Big Pink), naive folk art. Tactile artistic quality, artisan hand-crafted technique, visible surface texture, analog film grain, natural imperfections, charcoal and ink lithograph look.';
+            prompt += ' Style of David Park paintings, Bay Area Figurative Movement, thick gestural brushwork, heavy paint application, no fine details, abstract forms. Tactile artistic quality, artisan hand-crafted technique, visible surface texture, analog film grain, natural imperfections, charcoal and ink lithograph look.';
         }
 
         // Add scenery
