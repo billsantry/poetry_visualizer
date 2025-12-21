@@ -49,8 +49,32 @@ const Visualizer = ({ poem, onBack }) => {
                         return generatedImage;
                     } catch (imageErr) {
                         console.error(`Failed to generate image for segment ${i}:`, imageErr);
-                        if (i === 0) throw imageErr;
-                        return null;
+
+                        // Fallback: Try one more time with a purely abstract/safe prompt
+                        try {
+                            console.log(`Retrying segment ${i} with safe abstract prompt...`);
+                            const safePrompt = {
+                                ...promptData,
+                                prompt: `Abstract color field expressionist painting representing the mood: ${analysis.mood}. Soft atmospheric lighting, heavy brushstrokes, no text, no figures. Style of Mark Rothko and David Park.`
+                            };
+                            const [fallbackImage] = await generateImages([safePrompt]);
+
+                            setImages(prev => {
+                                const newImages = [...prev];
+                                newImages[i] = fallbackImage;
+                                return newImages;
+                            });
+
+                            if (i === 2 || (i === prompts.length - 1 && i < 2)) {
+                                setLoading(false);
+                            }
+
+                            return fallbackImage;
+                        } catch (fallbackErr) {
+                            console.error(`Fallback failed for segment ${i}:`, fallbackErr);
+                            if (i === 0) throw imageErr; // Critical fail if first image
+                            return null;
+                        }
                     }
                 });
 
