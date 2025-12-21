@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Download } from 'lucide-react';
+import { exportVideo } from '../utils/VideoExporter';
 import { analyzePoem, createRandom } from '../utils/analyzer';
 import { generateImagePrompts } from '../utils/imagePromptGenerator';
 import { generateImages } from '../utils/openaiClient';
@@ -16,6 +17,7 @@ const Visualizer = ({ poem, onBack }) => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isExporting, setIsExporting] = useState(false);
 
     useEffect(() => {
         const generateVisualization = async () => {
@@ -87,7 +89,22 @@ const Visualizer = ({ poem, onBack }) => {
         };
 
         generateVisualization();
+        generateVisualization();
     }, [poem, analysis]);
+
+    const handleExport = async () => {
+        if (!images.length) return;
+
+        setIsExporting(true);
+        try {
+            await exportVideo(images);
+        } catch (err) {
+            console.error(err);
+            alert("Could not export video. Your browser might restrictions on Canvas recording.");
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
     return (
         <motion.div
@@ -205,6 +222,15 @@ const Visualizer = ({ poem, onBack }) => {
                                     style={{ fontFamily: "'EB Garamond', serif" }}
                                 >
                                     Create New
+                                </button>
+                                <button
+                                    onClick={handleExport}
+                                    disabled={isExporting}
+                                    className="px-8 py-3 bg-white text-black font-semibold uppercase tracking-widest text-sm hover:bg-gray-200 transition-colors flex items-center gap-2 disabled:opacity-50"
+                                    style={{ fontFamily: "'EB Garamond', serif" }}
+                                >
+                                    {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                                    {isExporting ? 'Saving...' : 'Save Video'}
                                 </button>
                             </div>
 
