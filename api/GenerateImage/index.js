@@ -37,8 +37,11 @@ module.exports = async function (context, req) {
 };
 
 async function generateDallE(prompt, size, quality, model, context) {
-    const apiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY;
+    let apiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY;
     if (!apiKey) throw new Error("OpenAI API Key not configured");
+
+    // Clean potential whitespace
+    apiKey = apiKey.trim();
 
     const openai = new OpenAI({ apiKey });
 
