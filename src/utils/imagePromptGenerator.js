@@ -65,7 +65,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         let stylePrefix = isSpiritual ? 'A beautiful' : 'A raw, hand-painted';
 
         // RESTRUCTURE: Command DALL-E to visualize the text content primarily
-        let prompt = `Visualize this scene described in the text: "${cleanSegment}". The image must be a direct visual translation of the text's imagery.`;
+        let prompt = `Visualize this scene described in the text: "${cleanSegment}". Direct visual translations, double meanings, and visual metaphors are encouraged.`;
 
         // Add style AFTER the content directive
         prompt += ` ${stylePrefix} ${cleanStyle}.`;
@@ -75,7 +75,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         }
 
         // Refined literal instruction
-        prompt += ' FOCUS ON THE MEANING. If the text describes an action, object, or specific situation, depict it vividly. Do NOT revert to a generic landscape unless the text explicitly describes a landscape.';
+        prompt += ' FOCUS ON THE MEANING. Capture the literal scene OR a clever visual metaphor. Do NOT revert to a generic landscape unless the text explicitly describes a landscape.';
 
         // Add scenery merely as an environmental hint
         if (analysis.scenery && analysis.scenery !== 'neutral') {
@@ -93,7 +93,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
 
         // CRITICAL CONSTRAINTS: No people, no text
         prompt += ' NO people, NO human figures, NO faces, NO text, NO letters, NO typography, NO words in the image.';
-        prompt += ' Focus strictly on the tangible objects and metaphors in the text segment. AVOID generic landscapes.';
+        prompt += ' Focus strictly on the specific imagery and metaphors in the text segment. AVOID generic landscapes.';
 
         // Negative constraints to avoid AI "airbrushed" look
         prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, no hyper-realism, no polish.';
