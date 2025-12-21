@@ -118,7 +118,7 @@ const Visualizer = ({ poem, onBack }) => {
 
                         <div className="relative z-10 w-full max-w-6xl">
                             <div className="text-center mb-16">
-                                <h2 className="text-white/60 text-lg uppercase tracking-[0.4em] mb-4" style={{ fontFamily: "'EB Garamond', serif" }}>
+                                <h2 className="text-white/60 text-sm md:text-lg uppercase tracking-[0.4em] mb-4" style={{ fontFamily: "'EB Garamond', serif" }}>
                                     — The Collection —
                                 </h2>
                                 <h1 className="text-4xl md:text-5xl text-white font-normal" style={{ fontFamily: "'EB Garamond', serif", fontVariant: "small-caps" }}>
