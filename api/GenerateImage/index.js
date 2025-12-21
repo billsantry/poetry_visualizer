@@ -17,8 +17,16 @@ module.exports = async function (context, req) {
         context.res = { body: result };
         return;
     } catch (openaiError) {
-        context.log.warn(`OpenAI generation failed: ${openaiError.message}. Attempting fallback to Vertex AI...`);
+        context.log.warn(`OpenAI generation failed: ${openaiError.message}`);
 
+        // TEMPORARILY DISABLED VERTEX FALLBACK TO DEBUG CRASH
+        // Just return the DALL-E error directly to the user
+        context.res = {
+            status: 500,
+            body: `Generation failed. OpenAI Error: ${openaiError.message}`
+        };
+
+        /*
         // 2. Fallback to Google Vertex AI (Imagen)
         try {
             const result = await generateImagen(prompt, context);
@@ -32,6 +40,7 @@ module.exports = async function (context, req) {
                 body: `Generation failed. OpenAI: ${openaiError.message}. Vertex AI: ${vertexError.message}`
             };
         }
+        */
     }
 };
 
