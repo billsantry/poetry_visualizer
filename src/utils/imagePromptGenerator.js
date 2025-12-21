@@ -17,12 +17,23 @@ const sanitizePrompt = (text) => {
 
     let sanitized = text.toLowerCase();
 
+    // 1. General Safety Replacement
     // Replace whole words only to avoid replacing inside other words (e.g., "gun" in "shogun") - though shoguns are cool, we want to be safe.
     restricted.forEach(word => {
         // Match word boundary to avoid false positives (e.g. 'hell' in 'shell')
         const regex = new RegExp(`\\b${word}\\b`, 'gi');
         sanitized = sanitized.replace(regex, 'abstract form');
     });
+
+    // 2. Specific "soft" replacements to help visualization without triggering filters
+    // "Cannon" -> "Iron sphere" (avoids weapon filter)
+    sanitized = sanitized.replace(/\bcannon\b/gi, 'heavy iron');
+    sanitized = sanitized.replace(/\bcannons\b/gi, 'heavy iron shapes');
+    // "Man"/"Woman" -> "Figure" (avoids "NO people" conflict and gender filters)
+    sanitized = sanitized.replace(/\bman\b/gi, 'figure');
+    sanitized = sanitized.replace(/\bmen\b/gi, 'figures');
+    sanitized = sanitized.replace(/\bwoman\b/gi, 'figure');
+    sanitized = sanitized.replace(/\bwomen\b/gi, 'figures');
 
     return sanitized;
 };
