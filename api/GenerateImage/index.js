@@ -61,33 +61,71 @@ async function generateDallE(prompt, size, quality, model, context) {
 
 async function generateImagen(prompt, context) {
     const projectId = process.env.GOOGLE_PROJECT_ID;
-    if (!projectId) throw new Error("GOOGLE_PROJECT_ID not configured");
 
-    // Initialize Google Auth
-    // Expects GOOGLE_APPLICATION_CREDENTIALS env var (path to JSON) 
-    // OR default credentials available in environment.
-    const auth = new GoogleAuth({
-        scopes: 'https://www.googleapis.com/auth/cloud-platform',
-        // Attempt to support direct API key if provided (though Vertex often rejects this)
-        apiKey: process.env.GOOGLE_API_KEY || process.env.poetry_visualizer_backup
-    });
+    // Check for API Key (Simple string)
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.poetry_visualizer_backup;
 
-    const client = await auth.getClient();
-    const accessToken = await client.getAccessToken();
+    // Check for Service Account (JSON file path or content normally handled by GoogleAuth)
+    // We assume if specific env vars are missing, we try the API key path.
 
-    // Model: Imagen 3 (or 2). Using 'imagegeneration@006' (Imagen 2) for stability, or 'imagen-3.0-generate-001'
+    let accessToken = null;
+    let useApiKey = false;
+
+    // Initialize Google Auth only if we don't have a simple key or if we want to prefer Service Account
+    // But since the user specifically wants to use the Key, let's prioritize that if the Auth library fails or isn't set up.
+
+    try {
+        const auth = new GoogleAuth({
+            scopes: 'https://www.googleapis.com/auth/cloud-platform'
+        });
+        const client = await auth.getClient();
+        const token = await client.getAccessToken();
+        accessToken = token.token;
+    } catch (e) {
+        context.log.warn("Could not load default Google Service Account credentials. Trying API Key...");
+        if (!apiKey) throw new Error("No Google Credentials (JSON or API Key) found.");
+        useApiKey = true;
+    }
+
+    if (!projectId && !useApiKey) throw new Error("GOOGLE_PROJECT_ID not configured");
+
+    // Model: Imagen 2
     const modelId = 'imagegeneration@006';
     const location = 'us-central1';
-    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:predict`;
 
-    context.log(`Generating image with Vertex AI (${modelId}): ${prompt}`);
+    // Construct URL
+    // If using API Key, the docs suggest we might access via publishers/google/models directly OR projects
+    // But for "predict", it usually needs a project. 
+    // If projectId is missing but we have a key, we might be stuck, but let's assume the user put a project ID in.
+    // If NO project ID, we can try the "publishers/google/models" path from the user's snippet?
+    // The snippet: v1/publishers/google/models/gemini-2.5-flash-lite:streamGenerateContent
+    // Let's try to adapt that for Imagen.
+
+    let endpoint;
+    if (useApiKey && !projectId) {
+        // Try the project-less endpoint pattern for API keys (experimental for Imagen)
+        endpoint = `https://aiplatform.googleapis.com/v1/publishers/google/models/${modelId}:predict?key=${apiKey}`;
+    } else {
+        // Standard Vertex Endpoint
+        endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:predict`;
+        if (useApiKey) {
+            endpoint += `?key=${apiKey}`;
+        }
+    }
+
+    context.log(`Generating image with Vertex AI (${modelId}) via ${useApiKey ? 'API Key' : 'OAuth'}...`);
+
+    const headers = {
+        'Content-Type': 'application/json; charset=utf-8'
+    };
+
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
 
     const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken.token}`,
-            'Content-Type': 'application/json; charset=utf-8'
-        },
+        headers,
         body: JSON.stringify({
             instances: [
                 { prompt: prompt }
@@ -106,9 +144,10 @@ async function generateImagen(prompt, context) {
 
     const data = await response.json();
 
-    // Vertex returns a base64 encoded image string, not a URL.
-    // DALL-E returns a URL. The frontend expects a 'url'.
-    // We can return a data URI.
+    if (!data.predictions || !data.predictions[0]) {
+        throw new Error("No predictions returned from Vertex.");
+    }
+
     const base64Image = data.predictions[0].bytesBase64Encoded;
     if (!base64Image) {
         throw new Error("No image data returned from Vertex");
@@ -116,6 +155,7 @@ async function generateImagen(prompt, context) {
 
     return {
         url: `data:image/png;base64,${base64Image}`,
-        revised_prompt: prompt // Imagen doesn't usually return a revised prompt
+        revised_prompt: prompt
     };
 }
+```
