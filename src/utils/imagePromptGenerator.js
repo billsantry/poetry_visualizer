@@ -63,29 +63,34 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         const cleanStyle = sanitizePrompt(consistentStyle);
 
         let stylePrefix = isSpiritual ? 'A beautiful' : 'A raw, hand-painted';
-        let prompt = `${stylePrefix} ${cleanStyle} depicting: ${cleanSegment}.`;
+
+        // REORDERING: Put the content FIRST so DALL-E prioritizes the subject matter over the style
+        let prompt = `Subject: "${cleanSegment}". ${stylePrefix} ${cleanStyle}.`;
 
         if (!isSpiritual) {
             prompt += ' Style of David Park paintings, Bay Area Figurative Movement, thick gestural brushwork, heavy paint application, no fine details, abstract forms. Tactile artistic quality, artisan hand-crafted technique, visible surface texture, analog film grain, natural imperfections, charcoal and ink lithograph look.';
         }
 
-        // Add scenery
+        // Add explicit instruction to be literal
+        prompt += ' INTERPRET THE TEXT LITERALLY. If the text mentions specific objects (e.g. "bills", "factory", "key", "door"), DEPICT THEM PROMINENTLY. Do not default to a landscape unless the text describes one.';
+
+        // Add scenery as a background hint only, not a driver
         if (analysis.scenery && analysis.scenery !== 'neutral') {
-            prompt += ` Scene: ${analysis.scenery}.`;
+            prompt += ` Background atmosphere: ${analysis.scenery}.`;
         }
 
         // Add composition
         if (isFirst) {
-            prompt += ' Simple wide perspective.';
+            prompt += ' Perspective: Simple wide shot.';
         } else if (isLast) {
-            prompt += ' Straightforward close shot.';
+            prompt += ' Perspective: Straightforward close-up.';
         } else if (isMid) {
-            prompt += ' Basic eye-level view.';
+            prompt += ' Perspective: Basic eye-level view.';
         }
 
         // CRITICAL CONSTRAINTS: No people, no text
         prompt += ' NO people, NO human figures, NO faces, NO text, NO letters, NO typography, NO words in the image.';
-        prompt += ' Focus strictly on the subjects and metaphors mentioned in the segment. AVOID generic landscapes unless specified.';
+        prompt += ' Focus strictly on the tangible objects and metaphors in the text segment. AVOID generic landscapes.';
 
         // Negative constraints to avoid AI "airbrushed" look
         prompt += ' No digital smoothness, no synthetic textures, no computer-generated look, no airbrushed finish, no hyper-realism, no polish.';
@@ -98,7 +103,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
 
         return {
             segment,
-            prompt: prompt.slice(0, 800), // Ensure it stays within token limits
+            prompt: prompt.slice(0, 1000), // Slightly increased limit for DALL-E 3
             index
         };
     });
