@@ -169,11 +169,9 @@ export const exportVideo = async (images) => {
                 drawCenteredText(asset.segment, alpha);
             }
 
-            // Wait for next macrotask to allow browser to encode frame
-            await new Promise(r => setTimeout(r, 0));
-            // In a real browser loop, 0ms might be too fast for heavy encoding, 
-            // but for offline rendering it blocks UI thread. 
-            // We want it to run as fast as possible.
+            // Wait for next frame interval (30fps = ~33ms)
+            // We MUST wait real-time duration because captureStream records in real-time.
+            await new Promise(r => setTimeout(r, 1000 / fps));
         }
     }
 
