@@ -29,11 +29,6 @@ const sanitizePrompt = (text) => {
     // "Cannon" -> "Iron sphere" (avoids weapon filter)
     sanitized = sanitized.replace(/\bcannon\b/gi, 'heavy iron');
     sanitized = sanitized.replace(/\bcannons\b/gi, 'heavy iron shapes');
-    // "Man"/"Woman" -> "Figure" (avoids "NO people" conflict and gender filters)
-    sanitized = sanitized.replace(/\bman\b/gi, 'figure');
-    sanitized = sanitized.replace(/\bmen\b/gi, 'figures');
-    sanitized = sanitized.replace(/\bwoman\b/gi, 'figure');
-    sanitized = sanitized.replace(/\bwomen\b/gi, 'figures');
 
     return sanitized;
 };
@@ -117,7 +112,7 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         }
 
         // CRITICAL CONSTRAINTS
-        prompt += ' CRITICAL: NO people, NO faces, NO text/typography. NO digital gloss. NO photorealism. The image must look like a physical oil painting.';
+        prompt += ' CRITICAL: NO photorealism. NO text/typography. NO digital gloss. The image must look like a physical oil painting.';
 
         if (isSpiritual) {
             prompt += ' Mood: Ethereal and soft.';
