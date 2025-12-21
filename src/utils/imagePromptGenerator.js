@@ -81,7 +81,8 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         prompt += ` Style: Bay Area Figurative Movement, Thick Impasto Oil Painting, Bold broad brushstrokes, Rich saturated colors, Gouache texture.`;
 
         // INSTRUCTION: Force objects over landscapes (KEEPING THIS AS IT WORKED)
-        prompt += ' INSTRUCTION: Interpret the text as a tangible SYMBOL or OBJECT. If the text mentions "bills", show papers. If "factory", show a wall or gear. Do NOT draw a generic landscape or "atmospheric" scene. Draw the THING named in the text.';
+        // INSTRUCTION: Encouraging creative/metaphorical interpretation
+        prompt += ' INSTRUCTION: Visualize the text creatively. If the text is abstract or ambiguous, use visual METAPHORS or SYMBOLS to represent the meaning (e.g. represent "time" with a decaying clock, "freedom" with a bird). If a literal interpretation is unsafe or unclear, pivot to a symbolic one that captures the feeling. Do NOT default to generic landscapes unless the text describes one.';
 
         // Reference specific painterly styles (Removed Dubuffet/Sloppy)
         if (!isSpiritual) {
