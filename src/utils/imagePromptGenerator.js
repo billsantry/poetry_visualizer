@@ -30,6 +30,10 @@ const sanitizePrompt = (text) => {
     sanitized = sanitized.replace(/\bcannon\b/gi, 'heavy iron');
     sanitized = sanitized.replace(/\bcannons\b/gi, 'heavy iron shapes');
 
+    // "White dove" -> "Pale dove" (avoids potential race/hate speech filters misinterpreting 'white' in some contexts)
+    sanitized = sanitized.replace(/\bwhite dove\b/gi, 'pale dove');
+    sanitized = sanitized.replace(/\bwhite doves\b/gi, 'pale doves');
+
     return sanitized;
 };
 
