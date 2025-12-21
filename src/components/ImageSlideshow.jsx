@@ -7,9 +7,9 @@ const ImageSlideshow = ({ images, currentIndex, onIndexChange, onComplete }) => 
 
     useEffect(() => {
         // If image isn't ready yet, pause the timer (don't advance)
-        if (!currentImage) return;
+        if (!images[currentIndex]) return;
 
-        const currentSegment = currentImage.segment;
+        const currentSegment = images[currentIndex].segment;
         // Total animation entry time: last char delay (0.03s * length) + transition duration (0.3s)
         const entryAnimationMs = (currentSegment.length * 30) + 300;
         const dwellTimeMs = 7000;
