@@ -77,31 +77,31 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
         // RESTRUCTURED PROMPT
         let prompt = `Subject: "${cleanSegment}". Perspective: ${perspective}`;
 
-        // STYLE: Aggressive push for "Outsider Art" to kill the polish
-        prompt += ` Style: Naive Outsider Art, Raw Art Brut, Crude Oil Painting, Flat perspective, heavily textured impasto.`;
+        // STYLE: Refined back to David Park - Thick paint, bold forms, but not "sloppy"
+        prompt += ` Style: Bay Area Figurative Movement, Thick Impasto Oil Painting, Bold broad brushstrokes, Rich saturated colors, Gouache texture.`;
 
-        // INSTRUCTION: Force objects over landscapes
+        // INSTRUCTION: Force objects over landscapes (KEEPING THIS AS IT WORKED)
         prompt += ' INSTRUCTION: Interpret the text as a tangible SYMBOL or OBJECT. If the text mentions "bills", show papers. If "factory", show a wall or gear. Do NOT draw a generic landscape or "atmospheric" scene. Draw the THING named in the text.';
 
-        // Reference specific rough styles
+        // Reference specific painterly styles (Removed Dubuffet/Sloppy)
         if (!isSpiritual) {
-            prompt += ' Aesthetic: Style of David Park and Jean Dubuffet. Sloppy, messy, aggressive brushstrokes. Visible canvas grain. No fine details.';
+            prompt += ' Aesthetic: Style of David Park and Richard Diebenkorn. Heavy paint application, visible brush texture, flattened perspective, strong geometric forms. No fine details.';
         }
 
         // Add scenery ONLY if it's a specific place, otherwise suppress environment
         if (analysis.scenery && analysis.scenery !== 'neutral') {
             prompt += ` Setting: ${analysis.scenery}.`;
         } else {
-            prompt += ' Setting: abstract void or flat colored background.';
+            prompt += ' Setting: simple flat color backgrounds or abstract interior.';
         }
 
         // CRITICAL CONSTRAINTS
-        prompt += ' CRITICAL: NO people, NO faces, NO text/typography. NO digital gloss. NO photorealism. The image must look like a rough, physical painting found in a basement.';
+        prompt += ' CRITICAL: NO people, NO faces, NO text/typography. NO digital gloss. NO photorealism. The image must look like a physical oil painting.';
 
         if (isSpiritual) {
             prompt += ' Mood: Ethereal and soft.';
         } else {
-            prompt += ' Mood: Raw, unpolished, authentic.';
+            prompt += ' Mood: Moody, contemplative, textured.';
         }
 
         return {
