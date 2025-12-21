@@ -64,19 +64,22 @@ export const generateImagePrompts = (poem, analysis, isSpiritual = false) => {
 
         let stylePrefix = isSpiritual ? 'A beautiful' : 'A raw, hand-painted';
 
-        // REORDERING: Put the content FIRST so DALL-E prioritizes the subject matter over the style
-        let prompt = `Subject: "${cleanSegment}". ${stylePrefix} ${cleanStyle}.`;
+        // RESTRUCTURE: Command DALL-E to visualize the text content primarily
+        let prompt = `Visualize this scene described in the text: "${cleanSegment}". The image must be a direct visual translation of the text's imagery.`;
+
+        // Add style AFTER the content directive
+        prompt += ` ${stylePrefix} ${cleanStyle}.`;
 
         if (!isSpiritual) {
             prompt += ' Style of David Park paintings, Bay Area Figurative Movement, thick gestural brushwork, heavy paint application, no fine details, abstract forms. Tactile artistic quality, artisan hand-crafted technique, visible surface texture, analog film grain, natural imperfections, charcoal and ink lithograph look.';
         }
 
-        // Add explicit instruction to be literal
-        prompt += ' INTERPRET THE TEXT LITERALLY. If the text mentions specific objects (e.g. "bills", "factory", "key", "door"), DEPICT THEM PROMINENTLY. Do not default to a landscape unless the text describes one.';
+        // Refined literal instruction
+        prompt += ' FOCUS ON THE MEANING. If the text describes an action, object, or specific situation, depict it vividly. Do NOT revert to a generic landscape unless the text explicitly describes a landscape.';
 
-        // Add scenery as a background hint only, not a driver
+        // Add scenery merely as an environmental hint
         if (analysis.scenery && analysis.scenery !== 'neutral') {
-            prompt += ` Background atmosphere: ${analysis.scenery}.`;
+            prompt += ` Environment hint: ${analysis.scenery}.`;
         }
 
         // Add composition
